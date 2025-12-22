@@ -20,13 +20,9 @@ plt.rcParams["figure.figsize"] = (14, 6)
 print("="*70)
 print("LOADING DATA")
 print("="*70)
-print(f"Loading from: {Paths.INPUT_DATA_EXCEL}")
-df_raw = pd.read_excel(Paths.INPUT_DATA_EXCEL)
-
-# Convert first column to datetime and set as index
-df_raw["Unnamed: 0"] = pd.to_datetime(df_raw["Unnamed: 0"])
-df_raw = df_raw.rename(columns={"Unnamed: 0": "datetime"})
-df_raw = df_raw.set_index("datetime")
+print(f"Loading from: {Paths.INPUT_DATA_CSV}")
+df_raw = pd.read_csv(Paths.INPUT_DATA_CSV, index_col=0, parse_dates=[0])
+df_raw.index.name = "datetime"
 
 print(f"Raw data loaded: {df_raw.shape}")
 print(f"Raw date range: {df_raw.index.min().date()} to {df_raw.index.max().date()}")

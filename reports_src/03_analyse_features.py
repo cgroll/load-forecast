@@ -42,9 +42,9 @@ print(f"Loaded data shape: {data_with_features.shape}")
 print(f"Date range: {data_with_features.index.min()} to {data_with_features.index.max()}")
 
 # Load original data to identify new features
-print(f"Loading original data from: {Paths.INPUT_DATA_EXCEL}")
-original_data = pd.read_excel(
-    Paths.INPUT_DATA_EXCEL,
+print(f"Loading original data from: {Paths.INPUT_DATA_CSV}")
+original_data = pd.read_csv(
+    Paths.INPUT_DATA_CSV,
     index_col=0,
     parse_dates=True
 )

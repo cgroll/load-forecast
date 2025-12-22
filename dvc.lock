@@ -102,13 +102,13 @@ stages:
       size: 14063196
     - path: jobs/02_create_features.py
       hash: md5
-      md5: eddc9bd9c13133059c86a8d15df5c502
-      size: 5035
+      md5: 1f6895978b6e7648552517a50c5195be
+      size: 5027
     outs:
     - path: data/processed/data_with_features.csv
       hash: md5
-      md5: c8e4d42e9695f961bfe742ec6a5a79ce
-      size: 56449034
+      md5: e4d614f62b1af9b22c2cdff68c511eb8
+      size: 56426133
   report_01_eda:
     cmd: bash tools/generate_report.sh 01_eda reports_src/01_eda.py
     deps:
@@ -118,8 +118,8 @@ stages:
       size: 14063196
     - path: reports_src/01_eda.py
       hash: md5
-      md5: 0781ef647f98b5320524a3aa289d8c5e
-      size: 11150
+      md5: 88e1b729bb613e317f68f651bf774733
+      size: 10995
     - path: tools/generate_report.sh
       hash: md5
       md5: 505625a6a31e35f4bd6c91d11ca8bf6a
@@ -128,12 +128,12 @@ stages:
     outs:
     - path: reports/html/01_eda.html
       hash: md5
-      md5: d6401f1f6485b42bc6d207600364de90
-      size: 3674350
+      md5: ea9b0e23516cc3576c90bf935287bc9e
+      size: 3674349
     - path: reports/markdown/01_eda.md
       hash: md5
-      md5: edd8a52b883f1bf0f7566f326101bcb1
-      size: 9250
+      md5: 9d0f9f28448b8dbaa324ca5052b4e3b3
+      size: 9249
     - path: reports/markdown/01_eda_files
       hash: md5
       md5: 76ef547128f001944293624eada85e3b.dir
@@ -176,12 +176,12 @@ stages:
     deps:
     - path: data/processed/data_with_features.csv
       hash: md5
-      md5: c8e4d42e9695f961bfe742ec6a5a79ce
-      size: 56449034
+      md5: e4d614f62b1af9b22c2cdff68c511eb8
+      size: 56426133
     - path: reports_src/03_analyse_features.py
       hash: md5
-      md5: 9c027cb69a2dec62e3f6e3ed1d3c3fba
-      size: 7751
+      md5: 3b3ff2f94dcba05aeedceb37c2a44935
+      size: 7745
     - path: tools/generate_report.sh
       hash: md5
       md5: 505625a6a31e35f4bd6c91d11ca8bf6a
@@ -190,12 +190,12 @@ stages:
     outs:
     - path: reports/html/03_analyse_features.html
       hash: md5
-      md5: 03abdb22cd32161e6cd6ad5d5abf5a3b
-      size: 358742
+      md5: 378f5b479d9e6b87506ce198d3f21732
+      size: 358741
     - path: reports/markdown/03_analyse_features.md
       hash: md5
-      md5: 915e3100b20f98a57bebad23e1332236
-      size: 12251
+      md5: 5bfb14d12a18491a727fce161fc2f1ac
+      size: 12250
     - path: reports/markdown/03_analyse_features_files
       hash: md5
       md5: 5a21557934d8f4666c5bf40e1e5d2e1d.dir
@@ -206,8 +206,8 @@ stages:
     deps:
     - path: data/processed/data_with_features.csv
       hash: md5
-      md5: c8e4d42e9695f961bfe742ec6a5a79ce
-      size: 56449034
+      md5: e4d614f62b1af9b22c2cdff68c511eb8
+      size: 56426133
     - path: jobs/04_train_models_jan_nov_dec.py
       hash: md5
       md5: f99e59e0da3cb1e7ecfcf0ea8b26c2a0
@@ -215,8 +215,8 @@ stages:
     outs:
     - path: models/jan_nov_dec
       hash: md5
-      md5: 9fae1fdd5cd4846c6a69192e9166ded7.dir
-      size: 1043
+      md5: 8e19d16674cddd82d6549b17fdab5875.dir
+      size: 1042
       nfiles: 1
   report_05_evaluate_models_jan_nov_dec:
     cmd: bash tools/generate_report.sh 05_evaluate_models_jan_nov_dec 
@@ -224,8 +224,8 @@ stages:
     deps:
     - path: models/jan_nov_dec/training_results.json
       hash: md5
-      md5: 4d92e7bb1a38238938d888f9c53ffe49
-      size: 1043
+      md5: 102659ba30ee1067fbcd6d23208719e1
+      size: 1042
     - path: reports_src/05_evaluate_models_jan_nov_dec.py
       hash: md5
       md5: 5bc87c8b71678a3b6ae7ed14456555d3
@@ -238,28 +238,28 @@ stages:
     outs:
     - path: metrics/jan_nov_dec_evaluation.json
       hash: md5
-      md5: 6a366362beabf2098d27618f2060b8b9
-      size: 432
+      md5: 61be4a532a45c5c1f85400f4526114bf
+      size: 431
     - path: reports/html/05_evaluate_models_jan_nov_dec.html
       hash: md5
-      md5: 795df9c19eaa344a55e568c240634673
-      size: 1349997
+      md5: c52353a1f615fc0f4b42a5943e0ac524
+      size: 1354281
     - path: reports/markdown/05_evaluate_models_jan_nov_dec.md
       hash: md5
-      md5: fe1bbfe6e2e1e83bcc7d10f89bde5f5c
-      size: 5015
+      md5: 66b50d9e54dd43f8a054902a1eeaa309
+      size: 5013
     - path: reports/markdown/05_evaluate_models_jan_nov_dec_files
       hash: md5
-      md5: 766a9a15d7380224b05201af19907a07.dir
-      size: 800076
+      md5: facbc5c898558ebc031197fda88968a1.dir
+      size: 803402
       nfiles: 4
   train_models_quarterly:
     cmd: uv run python jobs/06_train_models_quarterly.py
     deps:
     - path: data/processed/data_with_features.csv
       hash: md5
-      md5: c8e4d42e9695f961bfe742ec6a5a79ce
-      size: 56449034
+      md5: e4d614f62b1af9b22c2cdff68c511eb8
+      size: 56426133
     - path: jobs/06_train_models_quarterly.py
       hash: md5
       md5: 817dbc98da68b533168432779656a706
@@ -267,7 +267,7 @@ stages:
     outs:
     - path: models/quarterly_split
       hash: md5
-      md5: ab4e71a76cc83df4e0a791c97f3d9747.dir
+      md5: ae9a3973e773869187d24ecf5c8432ed.dir
       size: 4473
       nfiles: 1
   report_07_evaluate_models_quarterly:
@@ -276,7 +276,7 @@ stages:
     deps:
     - path: models/quarterly_split/training_results.json
       hash: md5
-      md5: 0cf18e742029f36af205224a30c401f3
+      md5: 3d141e726fea96320fb55001ddc21294
       size: 4473
     - path: reports_src/07_evaluate_models_quarterly.py
       hash: md5
@@ -290,18 +290,18 @@ stages:
     outs:
     - path: metrics/quarterly_split_evaluation.json
       hash: md5
-      md5: 2d985687f2686ed39d351599cbe17903
+      md5: 230416946163d7bb170dc558b9a2df7c
       size: 2571
     - path: reports/html/07_evaluate_models_quarterly.html
       hash: md5
-      md5: 9100c000ffe32cdb46b1c9b8d2031f0c
-      size: 2953640
+      md5: cad1c55f85f104dfe973d40332cadf11
+      size: 2948807
     - path: reports/markdown/07_evaluate_models_quarterly.md
       hash: md5
-      md5: a3153030291e23da4488a3fd5d67ea4b
-      size: 12916
+      md5: 452532e076082a081901ec98d43bb336
+      size: 11339
     - path: reports/markdown/07_evaluate_models_quarterly_files
       hash: md5
-      md5: d478d87007e8f0bd650dee9be9683962.dir
-      size: 1985952
+      md5: f940b53c3a4ea4571b6c7c77953c8319.dir
+      size: 1986362
       nfiles: 11

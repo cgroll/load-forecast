@@ -24,14 +24,14 @@ from openstef.feature_engineering.apply_features import apply_features
 from openstef.data_classes.prediction_job import PredictionJobDataClass
 
 # %%
-# Load Excel data
+# Load CSV data
 print("="*70)
 print("LOADING DATA")
 print("="*70)
-print(f"Loading from: {Paths.INPUT_DATA_EXCEL}")
+print(f"Loading from: {Paths.INPUT_DATA_CSV}")
 
-data = pd.read_excel(
-    Paths.INPUT_DATA_EXCEL,
+data = pd.read_csv(
+    Paths.INPUT_DATA_CSV,
     index_col=0,
     parse_dates=True
 )

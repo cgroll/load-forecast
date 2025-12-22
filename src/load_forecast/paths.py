@@ -30,7 +30,8 @@ class Paths:
 
     # Raw input data
     DATA_RAW = PROJECT_ROOT / "data" / "raw_inputs"
-    INPUT_DATA_EXCEL = DATA_RAW / "input_data_sun_heavy.xlsx"
+    INPUT_DATA_CSV = DATA_RAW / "input_data_sun_heavy.csv"
+    INPUT_DATA_EXCEL = DATA_RAW / "input_data_sun_heavy.xlsx"  # Legacy, use CSV instead
 
     # Processed data
     DATA_PROCESSED = PROJECT_ROOT / "data" / "processed"
@@ -99,7 +100,7 @@ class Paths:
         print(f"\nProject Root: {cls.PROJECT_ROOT}")
         print(f"\nData Paths:")
         print(f"  Raw Data:           {cls.DATA_RAW}")
-        print(f"  Input Excel:        {cls.INPUT_DATA_EXCEL}")
+        print(f"  Input CSV:          {cls.INPUT_DATA_CSV}")
         print(f"  Processed Data:     {cls.DATA_PROCESSED}")
         print(f"  Features CSV:       {cls.DATA_WITH_FEATURES}")
         print(f"\nOutput Paths:")
@@ -115,5 +116,5 @@ class Paths:
 if __name__ == "__main__":
     Paths.print_config()
     print("\nChecking if key files exist:")
-    print(f"  Input Excel exists:  {Paths.INPUT_DATA_EXCEL.exists()}")
+    print(f"  Input CSV exists:    {Paths.INPUT_DATA_CSV.exists()}")
     print(f"  Features CSV exists: {Paths.DATA_WITH_FEATURES.exists()}")
