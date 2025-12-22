@@ -18,3 +18,39 @@ stages:
       hash: md5
       md5: 40449f8e67de40f5ff6c366bafd3d8b8
       size: 10565363
+  eda_data_info:
+    cmd: uv run jupytext --to notebook --execute 01_eda_data_info.py --output - 
+      | uv run jupyter nbconvert --stdin --to html --no-input --output 
+      reports/eda_data_info.html
+    deps:
+    - path: 01_eda_data_info.py
+      hash: md5
+      md5: 65c4f7517a49b7ce7d12264af474d12d
+      size: 9030
+    - path: data/input_data_sun_heavy.xlsx
+      hash: md5
+      md5: 2beb98a8582a60907d1a113230007fd8
+      size: 14063196
+    outs:
+    - path: reports/eda_data_info.html
+      hash: md5
+      md5: 5039405e4ff2edc57b406d86113f32fe
+      size: 354279
+  eda_timeseries:
+    cmd: uv run jupytext --to notebook --execute 02_eda_timeseries.py --output -
+      | uv run jupyter nbconvert --stdin --to html --no-input --output 
+      reports/eda_timeseries.html
+    deps:
+    - path: 02_eda_timeseries.py
+      hash: md5
+      md5: 2270d48c369dd46fc170dbbd656fdcc9
+      size: 3915
+    - path: data/input_data_sun_heavy.xlsx
+      hash: md5
+      md5: 2beb98a8582a60907d1a113230007fd8
+      size: 14063196
+    outs:
+    - path: reports/eda_timeseries.html
+      hash: md5
+      md5: c8e757708ea35fa23a4d963fa49cf0a3
+      size: 3591580

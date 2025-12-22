@@ -1,9 +1,18 @@
 stages:
-  eda:
-    cmd: uv run jupytext --to notebook --execute 01_eda.py --output - | uv run jupyter nbconvert --stdin --to html --no-input --output reports/eda_report.html
+  eda_data_info:
+    cmd: uv run jupytext --to notebook --execute 01_eda_data_info.py --output - | uv run jupyter nbconvert --stdin --to html --no-input --output reports/eda_data_info.html
     deps:
-      - 01_eda.py
+      - 01_eda_data_info.py
       - data/input_data_sun_heavy.xlsx
     outs:
-      - reports/eda_report.html:
+      - reports/eda_data_info.html:
+          cache: false
+
+  eda_timeseries:
+    cmd: uv run jupytext --to notebook --execute 02_eda_timeseries.py --output - | uv run jupyter nbconvert --stdin --to html --no-input --output reports/eda_timeseries.html
+    deps:
+      - 02_eda_timeseries.py
+      - data/input_data_sun_heavy.xlsx
+    outs:
+      - reports/eda_timeseries.html:
           cache: false
