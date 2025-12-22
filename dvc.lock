@@ -1,29 +1,35 @@
 schema: '2.0'
 stages:
   eda:
-    cmd: uv run jupytext --to notebook --execute 01_eda.py --output - | uv run 
-      jupyter nbconvert --stdin --to html --no-input --output 
-      reports/eda_report.html
+    cmd: uv run jupytext --to notebook 01_eda.py -o eda.ipynb --set-kernel 
+      python3 && uv run jupyter execute eda.ipynb --inplace && uv run jupyter 
+      nbconvert --to markdown eda.ipynb --output-dir reports --no-input && rm 
+      eda.ipynb
     deps:
     - path: 01_eda.py
       hash: md5
-      md5: d9dead57800fd20540182406f70a2e94
-      size: 11226
+      md5: c320f6b093d143233edc54e114730f30
+      size: 11051
     - path: data/input_data_sun_heavy.xlsx
       hash: md5
       md5: 2beb98a8582a60907d1a113230007fd8
       size: 14063196
     outs:
-    - path: reports/eda_report.html
+    - path: reports/eda.md
       hash: md5
-      md5: 40449f8e67de40f5ff6c366bafd3d8b8
-      size: 10565363
+      md5: c24fcb23a5f9f3be024c95a794310c68
+      size: 8885
+    - path: reports/eda_files
+      hash: md5
+      md5: 56fbb152d9704fd97acbe9b17f1363d8.dir
+      size: 2533771
+      nfiles: 45
   eda_data_info:
     cmd: uv run jupytext --to notebook 01_eda_data_info.py -o 
       eda_data_info.ipynb --set-kernel python3 && uv run jupyter execute 
       eda_data_info.ipynb --inplace && uv run jupyter nbconvert --to markdown 
-      eda_data_info.ipynb --output-dir reports --no-input && mv 
-      eda_data_info.ipynb reports/
+      eda_data_info.ipynb --output-dir reports --no-input && rm 
+      eda_data_info.ipynb
     deps:
     - path: 01_eda_data_info.py
       hash: md5
@@ -47,8 +53,8 @@ stages:
     cmd: uv run jupytext --to notebook 02_eda_timeseries.py -o 
       eda_timeseries.ipynb --set-kernel python3 && uv run jupyter execute 
       eda_timeseries.ipynb --inplace && uv run jupyter nbconvert --to markdown 
-      eda_timeseries.ipynb --output-dir reports --no-input && mv 
-      eda_timeseries.ipynb reports/
+      eda_timeseries.ipynb --output-dir reports --no-input && rm 
+      eda_timeseries.ipynb
     deps:
     - path: 02_eda_timeseries.py
       hash: md5
@@ -68,3 +74,22 @@ stages:
       md5: f5c69b9d253ca98058d1f4d7be35e549.dir
       size: 2475907
       nfiles: 44
+  eda_html:
+    cmd: uv run jupytext --to notebook 01_eda.py -o eda.ipynb --set-kernel 
+      python3 && uv run jupyter execute eda.ipynb --inplace && uv run jupyter 
+      nbconvert --to html eda.ipynb --output-dir reports --no-input && rm 
+      eda.ipynb
+    deps:
+    - path: 01_eda.py
+      hash: md5
+      md5: c320f6b093d143233edc54e114730f30
+      size: 11051
+    - path: data/input_data_sun_heavy.xlsx
+      hash: md5
+      md5: 2beb98a8582a60907d1a113230007fd8
+      size: 14063196
+    outs:
+    - path: reports/eda.html
+      hash: md5
+      md5: 3969a9454d18cca1eb4d8f05e72a2c15
+      size: 3674256

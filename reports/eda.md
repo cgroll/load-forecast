@@ -1,4 +1,4 @@
-    'Exploratory Data Analysis - Part 1: Data Information and Missing Data Analysis.'
+    'Exploratory Data Analysis for load forecast data.'
 
 
 
@@ -94,7 +94,7 @@
 
 
     
-![png](eda_data_info_files/eda_data_info_8_0.png)
+![png](eda_files/eda_8_0.png)
     
 
 
@@ -156,6 +156,462 @@
 
     
     ======================================================================
-    EDA PART 1 (DATA INFO) COMPLETE
+    SECTION 1: LOAD VARIABLE
+    ======================================================================
+    
+    Plotting: load
+
+
+
+    
+![png](eda_files/eda_11_1.png)
+    
+
+
+    
+    ======================================================================
+    SECTION 2: WEATHER/CLIMATE VARIABLES
+    ======================================================================
+    
+    Plotting: clearSky_dlf
+
+
+
+    
+![png](eda_files/eda_12_1.png)
+    
+
+
+    
+    Plotting: clearSky_ulf
+
+
+
+    
+![png](eda_files/eda_12_3.png)
+    
+
+
+    
+    Plotting: clouds
+
+
+
+    
+![png](eda_files/eda_12_5.png)
+    
+
+
+    
+    Plotting: humidity
+
+
+
+    
+![png](eda_files/eda_12_7.png)
+    
+
+
+    
+    Plotting: mxlD
+
+
+
+    
+![png](eda_files/eda_12_9.png)
+    
+
+
+    
+    Plotting: pressure
+
+
+
+    
+![png](eda_files/eda_12_11.png)
+    
+
+
+    
+    Plotting: radiation
+
+
+
+    
+![png](eda_files/eda_12_13.png)
+    
+
+
+    
+    Plotting: snowDepth
+
+
+
+    
+![png](eda_files/eda_12_15.png)
+    
+
+
+    
+    Plotting: temp
+
+
+
+    
+![png](eda_files/eda_12_17.png)
+    
+
+
+    
+    Plotting: winddeg
+
+
+
+    
+![png](eda_files/eda_12_19.png)
+    
+
+
+    
+    Plotting: windspeed
+
+
+
+    
+![png](eda_files/eda_12_21.png)
+    
+
+
+    
+    Plotting: windspeed_100m
+
+
+
+    
+![png](eda_files/eda_12_23.png)
+    
+
+
+    
+    ======================================================================
+    SECTION 3: PRICING VARIABLES
+    ======================================================================
+    
+    Plotting: APX
+
+
+
+    
+![png](eda_files/eda_13_1.png)
+    
+
+
+    
+    ======================================================================
+    SECTION 4: LOAD PROFILE VARIABLES
+    ======================================================================
+    
+    Plotting: E1A_AMI_A
+
+
+
+    
+![png](eda_files/eda_14_1.png)
+    
+
+
+    
+    Plotting: E1A_AMI_I
+
+
+
+    
+![png](eda_files/eda_14_3.png)
+    
+
+
+    
+    Plotting: E1A_AZI_A
+
+
+
+    
+![png](eda_files/eda_14_5.png)
+    
+
+
+    
+    Plotting: E1A_AZI_I
+
+
+
+    
+![png](eda_files/eda_14_7.png)
+    
+
+
+    
+    Plotting: E1B_AMI_A
+
+
+
+    
+![png](eda_files/eda_14_9.png)
+    
+
+
+    
+    Plotting: E1B_AMI_I
+
+
+
+    
+![png](eda_files/eda_14_11.png)
+    
+
+
+    
+    Plotting: E1B_AZI_A
+
+
+
+    
+![png](eda_files/eda_14_13.png)
+    
+
+
+    
+    Plotting: E1B_AZI_I
+
+
+
+    
+![png](eda_files/eda_14_15.png)
+    
+
+
+    
+    Plotting: E1C_AMI_A
+
+
+
+    
+![png](eda_files/eda_14_17.png)
+    
+
+
+    
+    Plotting: E1C_AMI_I
+
+
+
+    
+![png](eda_files/eda_14_19.png)
+    
+
+
+    
+    Plotting: E1C_AZI_A
+
+
+
+    
+![png](eda_files/eda_14_21.png)
+    
+
+
+    
+    Plotting: E1C_AZI_I
+
+
+
+    
+![png](eda_files/eda_14_23.png)
+    
+
+
+    
+    Plotting: E2A_AMI_A
+
+
+
+    
+![png](eda_files/eda_14_25.png)
+    
+
+
+    
+    Plotting: E2A_AMI_I
+
+
+
+    
+![png](eda_files/eda_14_27.png)
+    
+
+
+    
+    Plotting: E2A_AZI_A
+
+
+
+    
+![png](eda_files/eda_14_29.png)
+    
+
+
+    
+    Plotting: E2A_AZI_I
+
+
+
+    
+![png](eda_files/eda_14_31.png)
+    
+
+
+    
+    Plotting: E2B_AMI_A
+
+
+
+    
+![png](eda_files/eda_14_33.png)
+    
+
+
+    
+    Plotting: E2B_AMI_I
+
+
+
+    
+![png](eda_files/eda_14_35.png)
+    
+
+
+    
+    Plotting: E2B_AZI_A
+
+
+
+    
+![png](eda_files/eda_14_37.png)
+    
+
+
+    
+    Plotting: E2B_AZI_I
+
+
+
+    
+![png](eda_files/eda_14_39.png)
+    
+
+
+    
+    Plotting: E3A_A
+
+
+
+    
+![png](eda_files/eda_14_41.png)
+    
+
+
+    
+    Plotting: E3A_I
+
+
+
+    
+![png](eda_files/eda_14_43.png)
+    
+
+
+    
+    Plotting: E3B_A
+
+
+
+    
+![png](eda_files/eda_14_45.png)
+    
+
+
+    
+    Plotting: E3B_I
+
+
+
+    
+![png](eda_files/eda_14_47.png)
+    
+
+
+    
+    Plotting: E3C_A
+
+
+
+    
+![png](eda_files/eda_14_49.png)
+    
+
+
+    
+    Plotting: E3C_I
+
+
+
+    
+![png](eda_files/eda_14_51.png)
+    
+
+
+    
+    Plotting: E3D_A
+
+
+
+    
+![png](eda_files/eda_14_53.png)
+    
+
+
+    
+    Plotting: E3D_I
+
+
+
+    
+![png](eda_files/eda_14_55.png)
+    
+
+
+    
+    Plotting: E4A_A
+
+
+
+    
+![png](eda_files/eda_14_57.png)
+    
+
+
+    
+    Plotting: E4A_I
+
+
+
+    
+![png](eda_files/eda_14_59.png)
+    
+
+
+    
+    ======================================================================
+    EDA COMPLETE
     ======================================================================
 

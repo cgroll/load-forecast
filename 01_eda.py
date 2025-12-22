@@ -247,19 +247,16 @@ pricing_vars = [col for col in df.columns if any(keyword in col.lower() for keyw
 profile_vars = [col for col in df.columns if col not in load_vars + weather_vars + pricing_vars]
 
 print(f"\nLoad variables ({len(load_vars)}): {load_vars}")
+
 print(f"\nWeather/Climate variables ({len(weather_vars)}):")
-for var in weather_vars[:10]:
+for var in weather_vars:
     print(f"  - {var}")
-if len(weather_vars) > 10:
-    print(f"  ... and {len(weather_vars) - 10} more")
 
 print(f"\nPricing variables ({len(pricing_vars)}): {pricing_vars if pricing_vars else 'None found'}")
 
 print(f"\nLoad profile variables ({len(profile_vars)}):")
-for var in profile_vars[:10]:
+for var in profile_vars:
     print(f"  - {var}")
-if len(profile_vars) > 10:
-    print(f"  ... and {len(profile_vars) - 10} more")
 
 # %%
 # Helper function to create time series plot
@@ -288,7 +285,7 @@ print("="*70)
 
 for column in load_vars:
     print(f"\nPlotting: {column}")
-    fig, ax = plt.subplots(figsize=(14, 6))
+    fig, ax = plt.subplots(figsize=(7, 3))
     plot_timeseries(column, df, ax)
     plt.tight_layout()
     plt.show()
@@ -301,7 +298,7 @@ print("="*70)
 
 for column in weather_vars:
     print(f"\nPlotting: {column}")
-    fig, ax = plt.subplots(figsize=(14, 6))
+    fig, ax = plt.subplots(figsize=(7, 3))
     plot_timeseries(column, df, ax)
     plt.tight_layout()
     plt.show()
@@ -315,7 +312,7 @@ if pricing_vars:
 
     for column in pricing_vars:
         print(f"\nPlotting: {column}")
-        fig, ax = plt.subplots(figsize=(14, 6))
+        fig, ax = plt.subplots(figsize=(7, 3))
         plot_timeseries(column, df, ax)
         plt.tight_layout()
         plt.show()
@@ -328,7 +325,7 @@ print("="*70)
 
 for column in profile_vars:
     print(f"\nPlotting: {column}")
-    fig, ax = plt.subplots(figsize=(14, 6))
+    fig, ax = plt.subplots(figsize=(7, 3))
     plot_timeseries(column, df, ax)
     plt.tight_layout()
     plt.show()
