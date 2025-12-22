@@ -1,0 +1,23 @@
+[project]
+name = "load-forecast"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dvc>=3.65.0",
+    "ipykernel>=7.1.0",
+    "jupytext>=1.18.1",
+    "matplotlib>=3.10.8",
+    "nbconvert>=7.16.6",
+    "numpy>=2.4.0",
+    "openpyxl>=3.1.5",
+    "openstef>=3.4.92",
+    "pandas>=2.2.3",
+    "scikit-learn>=1.5.2",
+    "seaborn>=0.13.2",
+    "xgboost>=3.1.2",
+]
+
+[tool.marimo.runtime]
+output_max_bytes = 20_000_000
