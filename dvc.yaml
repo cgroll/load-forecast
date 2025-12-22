@@ -3,7 +3,7 @@ stages:
     cmd: uv run jupytext --to notebook 01_eda.py -o eda.ipynb --set-kernel python3 && uv run jupyter execute eda.ipynb --inplace && uv run jupyter nbconvert --to markdown eda.ipynb --output-dir reports --no-input && rm eda.ipynb
     deps:
       - 01_eda.py
-      - data/input_data_sun_heavy.xlsx
+      - data/raw_inputs/input_data_sun_heavy.xlsx
     outs:
       - reports/eda.md:
           cache: false
@@ -14,7 +14,16 @@ stages:
     cmd: uv run jupytext --to notebook 01_eda.py -o eda.ipynb --set-kernel python3 && uv run jupyter execute eda.ipynb --inplace && uv run jupyter nbconvert --to html eda.ipynb --output-dir reports --no-input && rm eda.ipynb
     deps:
       - 01_eda.py
-      - data/input_data_sun_heavy.xlsx
+      - data/raw_inputs/input_data_sun_heavy.xlsx
     outs:
       - reports/eda.html:
+          cache: false
+
+  create_features:
+    cmd: uv run python 02_create_features.py
+    deps:
+      - 02_create_features.py
+      - data/raw_inputs/input_data_sun_heavy.xlsx
+    outs:
+      - data/processed/data_with_features.csv:
           cache: false

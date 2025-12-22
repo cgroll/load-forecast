@@ -8,9 +8,9 @@ stages:
     deps:
     - path: 01_eda.py
       hash: md5
-      md5: c320f6b093d143233edc54e114730f30
-      size: 11051
-    - path: data/input_data_sun_heavy.xlsx
+      md5: c2aa6807bee5d9529790f3f522b5e132
+      size: 11062
+    - path: data/raw_inputs/input_data_sun_heavy.xlsx
       hash: md5
       md5: 2beb98a8582a60907d1a113230007fd8
       size: 14063196
@@ -82,14 +82,30 @@ stages:
     deps:
     - path: 01_eda.py
       hash: md5
-      md5: c320f6b093d143233edc54e114730f30
-      size: 11051
-    - path: data/input_data_sun_heavy.xlsx
+      md5: c2aa6807bee5d9529790f3f522b5e132
+      size: 11062
+    - path: data/raw_inputs/input_data_sun_heavy.xlsx
       hash: md5
       md5: 2beb98a8582a60907d1a113230007fd8
       size: 14063196
     outs:
     - path: reports/eda.html
       hash: md5
-      md5: 3969a9454d18cca1eb4d8f05e72a2c15
+      md5: c45a981cac0b9472e96ccc8d9127b07f
       size: 3674256
+  create_features:
+    cmd: uv run python 02_create_features.py
+    deps:
+    - path: 02_create_features.py
+      hash: md5
+      md5: c754a0343ffcec5e87a5818fe2bbdbcc
+      size: 5060
+    - path: data/raw_inputs/input_data_sun_heavy.xlsx
+      hash: md5
+      md5: 2beb98a8582a60907d1a113230007fd8
+      size: 14063196
+    outs:
+    - path: data/processed/data_with_features.csv
+      hash: md5
+      md5: d281f6a54cf85bf1588c24ab31ca39ef
+      size: 56449034

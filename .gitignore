@@ -10,4 +10,4 @@ wheels/
 .venv
 archive/
 # Data files
-/data/
+/data/raw_inputs/

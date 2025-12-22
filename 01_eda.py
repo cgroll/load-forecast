@@ -17,7 +17,7 @@ plt.rcParams["figure.figsize"] = (14, 6)
 print("="*70)
 print("LOADING DATA")
 print("="*70)
-df_raw = pd.read_excel("data/input_data_sun_heavy.xlsx")
+df_raw = pd.read_excel("data/raw_inputs/input_data_sun_heavy.xlsx")
 
 # Convert first column to datetime and set as index
 df_raw["Unnamed: 0"] = pd.to_datetime(df_raw["Unnamed: 0"])
