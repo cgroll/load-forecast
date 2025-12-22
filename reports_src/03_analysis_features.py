@@ -1,12 +1,12 @@
 # %%
-"""Feature Analysis and Visualization.
-
-This script:
-1. Loads the feature-enriched data
-2. Analyzes missing value patterns
-3. Visualizes missing data for top 20 features with most missing values
-4. Provides summary statistics for new features
-"""
+# # Feature Analysis and Visualization
+#
+# This script:
+#
+# 1. Loads the feature-enriched data
+# 2. Analyzes missing value patterns
+# 3. Visualizes missing data for top 20 features with most missing values
+# 4. Provides summary statistics for new features
 
 # %%
 # Imports
@@ -36,7 +36,7 @@ print(f"Date range: {data_with_features.index.min()} to {data_with_features.inde
 
 # Load original data to identify new features
 original_data = pd.read_excel(
-    "data/input_data_sun_heavy.xlsx",
+    "data/raw_inputs/input_data_sun_heavy.xlsx",
     index_col=0,
     parse_dates=True
 )
@@ -183,14 +183,11 @@ for group_name, group_features in feature_groups.items():
     if len(group_features) > 0:
         print(f"\n{group_name}: {len(group_features)} features")
 
-        # Show first few examples
-        for col in group_features[:5]:
+        # Show all features (not just first 5)
+        for col in group_features:
             missing = new_features_df[col].isnull().sum()
             missing_pct = (missing / total_rows) * 100
             print(f"  - {col:<35} (missing: {missing:>6,} = {missing_pct:>5.1f}%)")
-
-        if len(group_features) > 5:
-            print(f"  ... and {len(group_features) - 5} more")
 
 # %%
 print("\n" + "="*70)

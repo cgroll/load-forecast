@@ -1,29 +1,45 @@
 stages:
-  eda:
-    cmd: uv run jupytext --to notebook 01_eda.py -o eda.ipynb --set-kernel python3 && uv run jupyter execute eda.ipynb --inplace && uv run jupyter nbconvert --to markdown eda.ipynb --output-dir reports --no-input && rm eda.ipynb
-    deps:
-      - 01_eda.py
-      - data/raw_inputs/input_data_sun_heavy.xlsx
-    outs:
-      - reports/eda.md:
-          cache: false
-      - reports/eda_files:
-          cache: false
-
-  eda_html:
-    cmd: uv run jupytext --to notebook 01_eda.py -o eda.ipynb --set-kernel python3 && uv run jupyter execute eda.ipynb --inplace && uv run jupyter nbconvert --to html eda.ipynb --output-dir reports --no-input && rm eda.ipynb
-    deps:
-      - 01_eda.py
-      - data/raw_inputs/input_data_sun_heavy.xlsx
-    outs:
-      - reports/eda.html:
-          cache: false
+  # ============================================================
+  # DATA PROCESSING JOBS
+  # ============================================================
 
   create_features:
-    cmd: uv run python 02_create_features.py
+    cmd: uv run python jobs/02_create_features.py
     deps:
-      - 02_create_features.py
+      - jobs/02_create_features.py
       - data/raw_inputs/input_data_sun_heavy.xlsx
     outs:
       - data/processed/data_with_features.csv:
+          cache: false
+
+  # ============================================================
+  # REPORT GENERATION
+  # ============================================================
+
+  report_01_eda:
+    cmd: bash tools/generate_report.sh 01_eda reports_src/01_eda.py
+    deps:
+      - reports_src/01_eda.py
+      - data/raw_inputs/input_data_sun_heavy.xlsx
+      - tools/generate_report.sh
+    outs:
+      - reports/html/01_eda.html:
+          cache: false
+      - reports/markdown/01_eda.md:
+          cache: false
+      - reports/markdown/01_eda_files:
+          cache: false
+
+  report_03_analysis_features:
+    cmd: bash tools/generate_report.sh 03_analysis_features reports_src/03_analysis_features.py
+    deps:
+      - reports_src/03_analysis_features.py
+      - data/processed/data_with_features.csv
+      - tools/generate_report.sh
+    outs:
+      - reports/html/03_analysis_features.html:
+          cache: false
+      - reports/markdown/03_analysis_features.md:
+          cache: false
+      - reports/markdown/03_analysis_features_files:
           cache: false
