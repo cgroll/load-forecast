@@ -1,0 +1,20 @@
+schema: '2.0'
+stages:
+  eda:
+    cmd: uv run jupytext --to notebook --execute 01_eda.py --output - | uv run 
+      jupyter nbconvert --stdin --to html --no-input --output 
+      reports/eda_report.html
+    deps:
+    - path: 01_eda.py
+      hash: md5
+      md5: d9dead57800fd20540182406f70a2e94
+      size: 11226
+    - path: data/input_data_sun_heavy.xlsx
+      hash: md5
+      md5: 2beb98a8582a60907d1a113230007fd8
+      size: 14063196
+    outs:
+    - path: reports/eda_report.html
+      hash: md5
+      md5: 40449f8e67de40f5ff6c366bafd3d8b8
+      size: 10565363

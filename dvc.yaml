@@ -1,0 +1,9 @@
+stages:
+  eda:
+    cmd: uv run jupytext --to notebook --execute 01_eda.py --output - | uv run jupyter nbconvert --stdin --to html --no-input --output reports/eda_report.html
+    deps:
+      - 01_eda.py
+      - data/input_data_sun_heavy.xlsx
+    outs:
+      - reports/eda_report.html:
+          cache: false
