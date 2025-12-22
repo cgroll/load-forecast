@@ -25,8 +25,7 @@ stages:
       - jobs/02_create_features.py
       - data/raw_inputs/input_data_sun_heavy.xlsx
     outs:
-      - data/processed/data_with_features.csv:
-          cache: false
+      - data/processed/data_with_features.csv
 
   # 03: Analyse Features Report
   report_03_analyse_features:
@@ -54,8 +53,7 @@ stages:
       - jobs/04_train_models_jan_nov_dec.py
       - data/processed/data_with_features.csv
     outs:
-      - models/jan_nov_dec:
-          cache: false
+      - models/jan_nov_dec
 
   # 05: Evaluate Models (Jan-Nov vs Dec)
   report_05_evaluate_models_jan_nov_dec:
@@ -65,8 +63,7 @@ stages:
       - models/jan_nov_dec/training_results.json
       - tools/generate_report.sh
     metrics:
-      - metrics/jan_nov_dec_evaluation.json:
-          cache: false
+      - metrics/jan_nov_dec_evaluation.json
     outs:
       - reports/html/05_evaluate_models_jan_nov_dec.html:
           cache: false
@@ -82,8 +79,7 @@ stages:
       - jobs/06_train_models_quarterly.py
       - data/processed/data_with_features.csv
     outs:
-      - models/quarterly_split:
-          cache: false
+      - models/quarterly_split
 
   # 07: Evaluate Models (Quarterly)
   report_07_evaluate_models_quarterly:
@@ -93,8 +89,7 @@ stages:
       - models/quarterly_split/training_results.json
       - tools/generate_report.sh
     metrics:
-      - metrics/quarterly_split_evaluation.json:
-          cache: false
+      - metrics/quarterly_split_evaluation.json
     outs:
       - reports/html/07_evaluate_models_quarterly.html:
           cache: false

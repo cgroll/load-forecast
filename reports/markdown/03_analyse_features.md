@@ -5,8 +5,8 @@
 
 
     Loaded data shape: (35041, 133)
-    Date range: 2023-01-01 00:00:00+00:00 to 2024-01-01 00:00:00+00:00
-    Loading original data from: /home/chris/research/load-forecast/data/raw_inputs/input_data_sun_heavy.xlsx
+    Date range: 2023-01-01 00:00:00 to 2024-01-01 00:00:00
+    Loading original data from: /home/chris/research/load-forecast/data/raw_inputs/input_data_sun_heavy.csv
 
 
     
@@ -69,7 +69,7 @@
 
 
     
-![png](03_analysis_features_files/03_analysis_features_4_1.png)
+![png](03_analyse_features_files/03_analyse_features_4_1.png)
     
 
 
@@ -186,20 +186,20 @@
       - is_eerste_kerstdag                  (missing:      0 =   0.0%)
       - is_tweede_kerstdag                  (missing:      0 =   0.0%)
       - is_bevrijdingsdag                   (missing:      0 =   0.0%)
-      - is_herfstvakantiemidden             (missing:      0 =   0.0%)
-      - is_zomervakantiezuid                (missing:      0 =   0.0%)
-      - is_bouwvaknoord                     (missing:      0 =   0.0%)
-      - is_meivakantie                      (missing:      0 =   0.0%)
-      - is_voorjaarsvakantienoord           (missing:      0 =   0.0%)
+      - is_zomervakantiemidden              (missing:      0 =   0.0%)
+      - is_bouwvakzuid                      (missing:      0 =   0.0%)
+      - is_bouwvakmidden                    (missing:      0 =   0.0%)
       - is_kerstvakantie                    (missing:      0 =   0.0%)
+      - is_voorjaarsvakantiemidden          (missing:      0 =   0.0%)
+      - is_voorjaarsvakantienoord           (missing:      0 =   0.0%)
+      - is_voorjaarsvakantiezuid            (missing:      0 =   0.0%)
       - is_herfstvakantienoord              (missing:      0 =   0.0%)
       - is_zomervakantienoord               (missing:      0 =   0.0%)
-      - is_voorjaarsvakantiezuid            (missing:      0 =   0.0%)
-      - is_voorjaarsvakantiemidden          (missing:      0 =   0.0%)
-      - is_bouwvakmidden                    (missing:      0 =   0.0%)
+      - is_zomervakantiezuid                (missing:      0 =   0.0%)
+      - is_herfstvakantiemidden             (missing:      0 =   0.0%)
+      - is_bouwvaknoord                     (missing:      0 =   0.0%)
       - is_herfstvakantiezuid               (missing:      0 =   0.0%)
-      - is_bouwvakzuid                      (missing:      0 =   0.0%)
-      - is_zomervakantiemidden              (missing:      0 =   0.0%)
+      - is_meivakantie                      (missing:      0 =   0.0%)
       - windpowerFit_harm_arome             (missing:      4 =   0.0%)
       - saturation_pressure                 (missing:      4 =   0.0%)
       - vapour_pressure                     (missing:      4 =   0.0%)

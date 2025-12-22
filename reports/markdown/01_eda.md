@@ -5,6 +5,7 @@
     ======================================================================
     LOADING DATA
     ======================================================================
+    Loading from: /home/chris/research/load-forecast/data/raw_inputs/input_data_sun_heavy.csv
 
 
     Raw data loaded: (35041, 44)
