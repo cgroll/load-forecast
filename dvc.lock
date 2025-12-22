@@ -19,9 +19,11 @@ stages:
       md5: 40449f8e67de40f5ff6c366bafd3d8b8
       size: 10565363
   eda_data_info:
-    cmd: uv run jupytext --to notebook --execute 01_eda_data_info.py --output - 
-      | uv run jupyter nbconvert --stdin --to html --no-input --output 
-      reports/eda_data_info.html
+    cmd: uv run jupytext --to notebook 01_eda_data_info.py -o 
+      eda_data_info.ipynb --set-kernel python3 && uv run jupyter execute 
+      eda_data_info.ipynb --inplace && uv run jupyter nbconvert --to markdown 
+      eda_data_info.ipynb --output-dir reports --no-input && mv 
+      eda_data_info.ipynb reports/
     deps:
     - path: 01_eda_data_info.py
       hash: md5
@@ -32,14 +34,21 @@ stages:
       md5: 2beb98a8582a60907d1a113230007fd8
       size: 14063196
     outs:
-    - path: reports/eda_data_info.html
+    - path: reports/eda_data_info.md
       hash: md5
-      md5: 5039405e4ff2edc57b406d86113f32fe
-      size: 354279
+      md5: d7d602add6885de0348e476e4735673c
+      size: 4918
+    - path: reports/eda_data_info_files
+      hash: md5
+      md5: 4b3650f4f5da6a7003680d9bd39ce39c.dir
+      size: 57864
+      nfiles: 1
   eda_timeseries:
-    cmd: uv run jupytext --to notebook --execute 02_eda_timeseries.py --output -
-      | uv run jupyter nbconvert --stdin --to html --no-input --output 
-      reports/eda_timeseries.html
+    cmd: uv run jupytext --to notebook 02_eda_timeseries.py -o 
+      eda_timeseries.ipynb --set-kernel python3 && uv run jupyter execute 
+      eda_timeseries.ipynb --inplace && uv run jupyter nbconvert --to markdown 
+      eda_timeseries.ipynb --output-dir reports --no-input && mv 
+      eda_timeseries.ipynb reports/
     deps:
     - path: 02_eda_timeseries.py
       hash: md5
@@ -50,7 +59,12 @@ stages:
       md5: 2beb98a8582a60907d1a113230007fd8
       size: 14063196
     outs:
-    - path: reports/eda_timeseries.html
+    - path: reports/eda_timeseries.md
       hash: md5
-      md5: c8e757708ea35fa23a4d963fa49cf0a3
-      size: 3591580
+      md5: 508e686ba640caedcba51a807de86407
+      size: 5570
+    - path: reports/eda_timeseries_files
+      hash: md5
+      md5: f5c69b9d253ca98058d1f4d7be35e549.dir
+      size: 2475907
+      nfiles: 44

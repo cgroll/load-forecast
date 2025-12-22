@@ -1,18 +1,22 @@
 stages:
   eda_data_info:
-    cmd: uv run jupytext --to notebook --execute 01_eda_data_info.py --output - | uv run jupyter nbconvert --stdin --to html --no-input --output reports/eda_data_info.html
+    cmd: uv run jupytext --to notebook 01_eda_data_info.py -o eda_data_info.ipynb --set-kernel python3 && uv run jupyter execute eda_data_info.ipynb --inplace && uv run jupyter nbconvert --to markdown eda_data_info.ipynb --output-dir reports --no-input && mv eda_data_info.ipynb reports/
     deps:
       - 01_eda_data_info.py
       - data/input_data_sun_heavy.xlsx
     outs:
-      - reports/eda_data_info.html:
+      - reports/eda_data_info.md:
+          cache: false
+      - reports/eda_data_info_files:
           cache: false
 
   eda_timeseries:
-    cmd: uv run jupytext --to notebook --execute 02_eda_timeseries.py --output - | uv run jupyter nbconvert --stdin --to html --no-input --output reports/eda_timeseries.html
+    cmd: uv run jupytext --to notebook 02_eda_timeseries.py -o eda_timeseries.ipynb --set-kernel python3 && uv run jupyter execute eda_timeseries.ipynb --inplace && uv run jupyter nbconvert --to markdown eda_timeseries.ipynb --output-dir reports --no-input && mv eda_timeseries.ipynb reports/
     deps:
       - 02_eda_timeseries.py
       - data/input_data_sun_heavy.xlsx
     outs:
-      - reports/eda_timeseries.html:
+      - reports/eda_timeseries.md:
+          cache: false
+      - reports/eda_timeseries_files:
           cache: false
