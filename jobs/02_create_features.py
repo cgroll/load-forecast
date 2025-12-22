@@ -13,9 +13,11 @@ This script:
 # Imports
 import pandas as pd
 import numpy as np
-from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
+
+# Import centralized paths
+from load_forecast import Paths
 
 # OpenSTEF imports for feature engineering
 from openstef.feature_engineering.apply_features import apply_features
@@ -26,9 +28,10 @@ from openstef.data_classes.prediction_job import PredictionJobDataClass
 print("="*70)
 print("LOADING DATA")
 print("="*70)
+print(f"Loading from: {Paths.INPUT_DATA_EXCEL}")
 
 data = pd.read_excel(
-    "data/raw_inputs/input_data_sun_heavy.xlsx",
+    Paths.INPUT_DATA_EXCEL,
     index_col=0,
     parse_dates=True
 )
@@ -133,12 +136,11 @@ print("\n" + "="*70)
 print("SAVING PROCESSED DATA")
 print("="*70)
 
-# Create output directory if it doesn't exist
-output_dir = Path("data/processed")
-output_dir.mkdir(parents=True, exist_ok=True)
+# Ensure output directory exists
+Paths.ensure_dirs()
 
 # Save to CSV
-output_path = output_dir / "data_with_features.csv"
+output_path = Paths.DATA_WITH_FEATURES
 data_with_features.to_csv(output_path)
 
 print(f"Saved processed data to: {output_path}")

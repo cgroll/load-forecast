@@ -18,6 +18,9 @@ from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 
+# Import centralized paths
+from load_forecast import Paths
+
 # Set plotting style
 sns.set_style("whitegrid")
 plt.rcParams['figure.figsize'] = (14, 6)
@@ -27,16 +30,21 @@ plt.rcParams['figure.figsize'] = (14, 6)
 print("="*70)
 print("LOADING PROCESSED DATA")
 print("="*70)
+print(f"Loading from: {Paths.DATA_WITH_FEATURES}")
 
-data_path = Path("data/processed/data_with_features.csv")
-data_with_features = pd.read_csv(data_path, index_col=0, parse_dates=True)
+data_with_features = pd.read_csv(Paths.DATA_WITH_FEATURES, index_col=0, parse_dates=True)
+
+# Remove timezone info if present (simplifies date comparisons)
+if hasattr(data_with_features.index, 'tz') and data_with_features.index.tz is not None:
+    data_with_features.index = data_with_features.index.tz_localize(None)
 
 print(f"Loaded data shape: {data_with_features.shape}")
 print(f"Date range: {data_with_features.index.min()} to {data_with_features.index.max()}")
 
 # Load original data to identify new features
+print(f"Loading original data from: {Paths.INPUT_DATA_EXCEL}")
 original_data = pd.read_excel(
-    "data/raw_inputs/input_data_sun_heavy.xlsx",
+    Paths.INPUT_DATA_EXCEL,
     index_col=0,
     parse_dates=True
 )

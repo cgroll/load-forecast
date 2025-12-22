@@ -1,21 +1,9 @@
 stages:
   # ============================================================
-  # DATA PROCESSING JOBS
+  # DATA PROCESSING & REPORTS
   # ============================================================
 
-  create_features:
-    cmd: uv run python jobs/02_create_features.py
-    deps:
-      - jobs/02_create_features.py
-      - data/raw_inputs/input_data_sun_heavy.xlsx
-    outs:
-      - data/processed/data_with_features.csv:
-          cache: false
-
-  # ============================================================
-  # REPORT GENERATION
-  # ============================================================
-
+  # 01: EDA Report
   report_01_eda:
     cmd: bash tools/generate_report.sh 01_eda reports_src/01_eda.py
     deps:
@@ -30,16 +18,87 @@ stages:
       - reports/markdown/01_eda_files:
           cache: false
 
-  report_03_analysis_features:
-    cmd: bash tools/generate_report.sh 03_analysis_features reports_src/03_analysis_features.py
+  # 02: Create Features
+  create_features:
+    cmd: uv run python jobs/02_create_features.py
     deps:
-      - reports_src/03_analysis_features.py
+      - jobs/02_create_features.py
+      - data/raw_inputs/input_data_sun_heavy.xlsx
+    outs:
+      - data/processed/data_with_features.csv:
+          cache: false
+
+  # 03: Analyse Features Report
+  report_03_analyse_features:
+    cmd: bash tools/generate_report.sh 03_analyse_features reports_src/03_analyse_features.py
+    deps:
+      - reports_src/03_analyse_features.py
       - data/processed/data_with_features.csv
       - tools/generate_report.sh
     outs:
-      - reports/html/03_analysis_features.html:
+      - reports/html/03_analyse_features.html:
           cache: false
-      - reports/markdown/03_analysis_features.md:
+      - reports/markdown/03_analyse_features.md:
           cache: false
-      - reports/markdown/03_analysis_features_files:
+      - reports/markdown/03_analyse_features_files:
+          cache: false
+
+  # ============================================================
+  # MODEL TRAINING & EVALUATION
+  # ============================================================
+
+  # 04: Train Models (Jan-Nov vs Dec)
+  train_models_jan_nov_dec:
+    cmd: uv run python jobs/04_train_models_jan_nov_dec.py
+    deps:
+      - jobs/04_train_models_jan_nov_dec.py
+      - data/processed/data_with_features.csv
+    outs:
+      - models/jan_nov_dec:
+          cache: false
+
+  # 05: Evaluate Models (Jan-Nov vs Dec)
+  report_05_evaluate_models_jan_nov_dec:
+    cmd: bash tools/generate_report.sh 05_evaluate_models_jan_nov_dec reports_src/05_evaluate_models_jan_nov_dec.py
+    deps:
+      - reports_src/05_evaluate_models_jan_nov_dec.py
+      - models/jan_nov_dec/training_results.json
+      - tools/generate_report.sh
+    metrics:
+      - metrics/jan_nov_dec_evaluation.json:
+          cache: false
+    outs:
+      - reports/html/05_evaluate_models_jan_nov_dec.html:
+          cache: false
+      - reports/markdown/05_evaluate_models_jan_nov_dec.md:
+          cache: false
+      - reports/markdown/05_evaluate_models_jan_nov_dec_files:
+          cache: false
+
+  # 06: Train Models (Quarterly)
+  train_models_quarterly:
+    cmd: uv run python jobs/06_train_models_quarterly.py
+    deps:
+      - jobs/06_train_models_quarterly.py
+      - data/processed/data_with_features.csv
+    outs:
+      - models/quarterly_split:
+          cache: false
+
+  # 07: Evaluate Models (Quarterly)
+  report_07_evaluate_models_quarterly:
+    cmd: bash tools/generate_report.sh 07_evaluate_models_quarterly reports_src/07_evaluate_models_quarterly.py
+    deps:
+      - reports_src/07_evaluate_models_quarterly.py
+      - models/quarterly_split/training_results.json
+      - tools/generate_report.sh
+    metrics:
+      - metrics/quarterly_split_evaluation.json:
+          cache: false
+    outs:
+      - reports/html/07_evaluate_models_quarterly.html:
+          cache: false
+      - reports/markdown/07_evaluate_models_quarterly.md:
+          cache: false
+      - reports/markdown/07_evaluate_models_quarterly_files:
           cache: false

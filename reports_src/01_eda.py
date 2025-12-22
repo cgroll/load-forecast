@@ -7,6 +7,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Import centralized paths
+from load_forecast import Paths
+
 # %%
 # Set style for better-looking plots
 sns.set_style("whitegrid")
@@ -17,7 +20,8 @@ plt.rcParams["figure.figsize"] = (14, 6)
 print("="*70)
 print("LOADING DATA")
 print("="*70)
-df_raw = pd.read_excel("data/raw_inputs/input_data_sun_heavy.xlsx")
+print(f"Loading from: {Paths.INPUT_DATA_EXCEL}")
+df_raw = pd.read_excel(Paths.INPUT_DATA_EXCEL)
 
 # Convert first column to datetime and set as index
 df_raw["Unnamed: 0"] = pd.to_datetime(df_raw["Unnamed: 0"])
