@@ -155,8 +155,6 @@
     ======================================================================
     
     Baseline:
-
-
       Best:  Horizon 1 (15min) - RMSE: 0.3902
       Worst: Horizon 8 (120min) - RMSE: 1.2941
       Range: 0.9039 (231.7% increase)

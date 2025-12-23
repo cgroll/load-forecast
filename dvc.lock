@@ -96,10 +96,10 @@ stages:
   create_features:
     cmd: uv run python jobs/02_create_features.py
     deps:
-    - path: data/raw_inputs/input_data_sun_heavy.xlsx
+    - path: data/raw_inputs/input_data_sun_heavy.csv
       hash: md5
-      md5: 2beb98a8582a60907d1a113230007fd8
-      size: 14063196
+      md5: 54743a80558134c0d3f51ebb9ff95919
+      size: 17455784
     - path: jobs/02_create_features.py
       hash: md5
       md5: 1f6895978b6e7648552517a50c5195be
@@ -107,16 +107,16 @@ stages:
     outs:
     - path: data/processed/data_with_features.csv
       hash: md5
-      md5: 16dc338ce83fb4d7e9d56f01513a6b7f
+      md5: b86e6b4095af267bd51242683e55c1ff
       size: 56426133
   report_01_eda:
-    cmd: bash tools/generate_report.sh 01_eda reports_src/01_eda.py
+    cmd: bash tools/generate_report.sh 01_eda jobs/01_eda.py
     deps:
-    - path: data/raw_inputs/input_data_sun_heavy.xlsx
+    - path: data/raw_inputs/input_data_sun_heavy.csv
       hash: md5
-      md5: 2beb98a8582a60907d1a113230007fd8
-      size: 14063196
-    - path: reports_src/01_eda.py
+      md5: 54743a80558134c0d3f51ebb9ff95919
+      size: 17455784
+    - path: jobs/01_eda.py
       hash: md5
       md5: 88e1b729bb613e317f68f651bf774733
       size: 10995
@@ -128,7 +128,7 @@ stages:
     outs:
     - path: reports/html/01_eda.html
       hash: md5
-      md5: 0cb5a7353e73bbfd4eece12fc27a5111
+      md5: 9bfe2101b882feb3b3df3411b7aa1862
       size: 3674349
     - path: reports/markdown/01_eda.md
       hash: md5
@@ -172,13 +172,13 @@ stages:
       nfiles: 1
   report_03_analyse_features:
     cmd: bash tools/generate_report.sh 03_analyse_features 
-      reports_src/03_analyse_features.py
+      jobs/03_analyse_features.py
     deps:
     - path: data/processed/data_with_features.csv
       hash: md5
-      md5: 16dc338ce83fb4d7e9d56f01513a6b7f
+      md5: b86e6b4095af267bd51242683e55c1ff
       size: 56426133
-    - path: reports_src/03_analyse_features.py
+    - path: jobs/03_analyse_features.py
       hash: md5
       md5: 3b3ff2f94dcba05aeedceb37c2a44935
       size: 7745
@@ -190,11 +190,11 @@ stages:
     outs:
     - path: reports/html/03_analyse_features.html
       hash: md5
-      md5: 4949dab621b1c7069222352a00b0b905
+      md5: 2256b8758f9a7fcf722ffb3bf93eabc2
       size: 358741
     - path: reports/markdown/03_analyse_features.md
       hash: md5
-      md5: 299068968bfd8341e487c820d06f97ca
+      md5: e19542e4a116cc06182c4a95cb998cd1
       size: 12250
     - path: reports/markdown/03_analyse_features_files
       hash: md5
@@ -381,14 +381,214 @@ stages:
       size: 6507
     - path: reports/html/09_evaluate_multi_horizon_quarterly.html
       hash: md5
-      md5: f14570fe33b52e24380842513bc40b1b
-      size: 834037
+      md5: b9176d4e25688d9995cda053a1bb48ee
+      size: 833885
     - path: reports/markdown/09_evaluate_multi_horizon_quarterly.md
       hash: md5
-      md5: 3986501197f7e514bf738a5341fd87a2
-      size: 9481
+      md5: 6405b809fffd86c5310023bac9273ae0
+      size: 9479
     - path: reports/markdown/09_evaluate_multi_horizon_quarterly_files
       hash: md5
       md5: 4d567e5823a0d711efe1f7c05ba0b344.dir
       size: 412494
+      nfiles: 4
+  report_12_feature_importance:
+    cmd: bash tools/generate_report.sh 12_feature_importance 
+      reports_src/12_feature_importance.py
+    deps:
+    - path: data/processed/data_with_features.csv
+      hash: md5
+      md5: 16dc338ce83fb4d7e9d56f01513a6b7f
+      size: 56426133
+    - path: reports_src/12_feature_importance.py
+      hash: md5
+      md5: 86b8649206729ff91b2c987c37df73b6
+      size: 27815
+    - path: tools/generate_report.sh
+      hash: md5
+      md5: 505625a6a31e35f4bd6c91d11ca8bf6a
+      size: 1869
+      isexec: true
+    outs:
+    - path: metrics/feature_importance_analysis.json
+      hash: md5
+      md5: 2918302a1e85e0387cb29eb249c8e6b0
+      size: 636
+    - path: models/feature_importance_analysis
+      hash: md5
+      md5: 4297f5f57a056017cb9f4df231ec8e86.dir
+      size: 7285
+      nfiles: 1
+    - path: reports/html/12_feature_importance.html
+      hash: md5
+      md5: a21a208ea8c27cc0988a4951b638b2d3
+      size: 709846
+    - path: reports/markdown/12_feature_importance.md
+      hash: md5
+      md5: 89dcf64f673d2044c89c00c3a2b4aa8f
+      size: 18602
+    - path: reports/markdown/12_feature_importance_files
+      hash: md5
+      md5: 19af86d751ecea982607eb4b5093f284.dir
+      size: 309879
+      nfiles: 5
+  report_06_train_evaluate_quarterly:
+    cmd: bash tools/generate_report.sh 06_train_models_quarterly 
+      jobs/06_train_models_quarterly.py
+    deps:
+    - path: data/processed/data_with_features.csv
+      hash: md5
+      md5: 16dc338ce83fb4d7e9d56f01513a6b7f
+      size: 56426133
+    - path: jobs/06_train_models_quarterly.py
+      hash: md5
+      md5: d401995aee55f3368eafcebdedadcb4c
+      size: 29457
+    - path: tools/generate_report.sh
+      hash: md5
+      md5: 505625a6a31e35f4bd6c91d11ca8bf6a
+      size: 1869
+      isexec: true
+    outs:
+    - path: metrics/quarterly_split_evaluation.json
+      hash: md5
+      md5: efa7639c11387d189008b95f380eff30
+      size: 2201
+    - path: models/quarterly_split
+      hash: md5
+      md5: 15bf87bfcf7091150041de608e214371.dir
+      size: 4599
+      nfiles: 1
+    - path: reports/html/06_train_models_quarterly.html
+      hash: md5
+      md5: 222d9dbc0e9b7712cf975db730f69586
+      size: 1935952
+    - path: reports/markdown/06_train_models_quarterly.md
+      hash: md5
+      md5: 25325cda432edb6db4fe18fd1d34d764
+      size: 13031
+    - path: reports/markdown/06_train_models_quarterly_files
+      hash: md5
+      md5: c9c057cfb1dd75d816ce0f5703f9dc92.dir
+      size: 1231365
+      nfiles: 4
+  report_04_train_evaluate_jan_nov_dec:
+    cmd: bash tools/generate_report.sh 04_train_models_jan_nov_dec 
+      jobs/04_train_models_jan_nov_dec.py
+    deps:
+    - path: data/processed/data_with_features.csv
+      hash: md5
+      md5: b86e6b4095af267bd51242683e55c1ff
+      size: 56426133
+    - path: jobs/04_train_models_jan_nov_dec.py
+      hash: md5
+      md5: 27fb774b8c4be6407f01e8d3e2391dbb
+      size: 20570
+    - path: tools/generate_report.sh
+      hash: md5
+      md5: 505625a6a31e35f4bd6c91d11ca8bf6a
+      size: 1869
+      isexec: true
+    outs:
+    - path: metrics/jan_nov_dec_evaluation.json
+      hash: md5
+      md5: 1c510161086736563cce1c4427511685
+      size: 432
+    - path: models/jan_nov_dec
+      hash: md5
+      md5: bd4f62f43024181db18c643de91baab4.dir
+      size: 1043
+      nfiles: 1
+    - path: reports/html/04_train_models_jan_nov_dec.html
+      hash: md5
+      md5: c7dc888baf5f15e96aab9ff016aa8f83
+      size: 1354118
+    - path: reports/markdown/04_train_models_jan_nov_dec.md
+      hash: md5
+      md5: b19dae1a41524971c5c61eca37007202
+      size: 7259
+    - path: reports/markdown/04_train_models_jan_nov_dec_files
+      hash: md5
+      md5: 202b4095437c8c6aec9728dcc0132ba3.dir
+      size: 800347
+      nfiles: 4
+  report_05_train_evaluate_quarterly:
+    cmd: bash tools/generate_report.sh 05_train_models_quarterly 
+      jobs/05_train_models_quarterly.py
+    deps:
+    - path: data/processed/data_with_features.csv
+      hash: md5
+      md5: b86e6b4095af267bd51242683e55c1ff
+      size: 56426133
+    - path: jobs/05_train_models_quarterly.py
+      hash: md5
+      md5: cc083c628f39a2de29d82ddb3ae81f39
+      size: 28275
+    - path: tools/generate_report.sh
+      hash: md5
+      md5: 505625a6a31e35f4bd6c91d11ca8bf6a
+      size: 1869
+      isexec: true
+    outs:
+    - path: metrics/quarterly_split_evaluation.json
+      hash: md5
+      md5: 86ebf90c8e376d00113a217bb04ae9a4
+      size: 2199
+    - path: models/quarterly_split
+      hash: md5
+      md5: 04f0f9a3a87a55f50fd6fb0ccbfaecc4.dir
+      size: 4597
+      nfiles: 1
+    - path: reports/html/05_train_models_quarterly.html
+      hash: md5
+      md5: 5797c269048d9a62b6f0f6b7d76e6435
+      size: 1924773
+    - path: reports/markdown/05_train_models_quarterly.md
+      hash: md5
+      md5: 69d174ce401dc7fe981604fa10446741
+      size: 13711
+    - path: reports/markdown/05_train_models_quarterly_files
+      hash: md5
+      md5: 629bb1cc843e1e0f56630eba4c386e0b.dir
+      size: 1221053
+      nfiles: 4
+  report_06_train_evaluate_multi_horizon_quarterly:
+    cmd: bash tools/generate_report.sh 06_multi_horizon_quarterly 
+      jobs/06_multi_horizon_quarterly.py
+    deps:
+    - path: data/processed/data_with_features.csv
+      hash: md5
+      md5: b86e6b4095af267bd51242683e55c1ff
+      size: 56426133
+    - path: jobs/06_multi_horizon_quarterly.py
+      hash: md5
+      md5: bd38fb1b497202da3cc293d3fc1226a1
+      size: 30789
+    - path: tools/generate_report.sh
+      hash: md5
+      md5: 505625a6a31e35f4bd6c91d11ca8bf6a
+      size: 1869
+      isexec: true
+    outs:
+    - path: metrics/multi_horizon_quarterly_evaluation.json
+      hash: md5
+      md5: 9dbf2a45822cd297fa5ad60b3769c474
+      size: 6498
+    - path: models/multi_horizon_quarterly
+      hash: md5
+      md5: 557bb1c8cd5e68bb8a68591402941ace.dir
+      size: 21323
+      nfiles: 1
+    - path: reports/html/06_multi_horizon_quarterly.html
+      hash: md5
+      md5: 9399edee408afccbae0263829e55850e
+      size: 848772
+    - path: reports/markdown/06_multi_horizon_quarterly.md
+      hash: md5
+      md5: eeff379a30eb3df93436e21bf812c013
+      size: 18116
+    - path: reports/markdown/06_multi_horizon_quarterly_files
+      hash: md5
+      md5: e1837a2e819a472cd4ebdd367d3af8c5.dir
+      size: 413670
       nfiles: 4

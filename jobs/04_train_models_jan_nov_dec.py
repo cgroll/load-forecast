@@ -1,14 +1,21 @@
 # %%
-"""Train Baseline, Direct XGBoost, and OpenSTEF XGBoost models using Jan-Nov/Dec split.
+"""Train and Evaluate Models using Jan-Nov/Dec split.
 
-This script:
+This script combines training and evaluation:
 1. Loads preprocessed feature-enriched data from data/processed/data_with_features.csv
 2. Splits data: Jan-Nov for training, December for testing
 3. Trains three models:
    a) Baseline (Persistence): Uses last known load value as prediction
    b) Direct XGBoost with manual configuration
    c) OpenSTEF XGBOpenstfRegressor with OpenSTEF's training approach
-4. Saves training metadata and results to models/jan_nov_dec/
+4. Evaluates models on December test period
+5. Creates comprehensive visualizations:
+   - Metrics comparison bar charts
+   - Time series plots
+   - Scatter plots for each model
+   - Error distribution histograms
+6. Saves training results to models/jan_nov_dec/training_results.json
+7. Exports metrics to metrics/jan_nov_dec_evaluation.json for DVC tracking
 
 Uses Jupyter cell blocks (# %%) for interactive execution.
 """
@@ -17,6 +24,8 @@ Uses Jupyter cell blocks (# %%) for interactive execution.
 # Imports
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 import json
 from pathlib import Path
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
@@ -33,6 +42,10 @@ from openstef.data_classes.prediction_job import PredictionJobDataClass
 from openstef.model.model_creator import ModelCreator
 from openstef.model_selection.model_selection import split_data_train_validation_test
 
+# Set plotting style
+sns.set_style("whitegrid")
+plt.rcParams['figure.figsize'] = (18, 8)
+
 # Set random seed for reproducibility
 RANDOM_SEED = 42
 np.random.seed(RANDOM_SEED)
@@ -42,7 +55,7 @@ np.random.seed(RANDOM_SEED)
 EXPERIMENT_NAME = "jan_nov_dec"
 
 print("="*70)
-print("JAN-NOV vs DECEMBER MODEL TRAINING")
+print("JAN-NOV vs DECEMBER MODEL TRAINING AND EVALUATION")
 print("="*70)
 print(f"Experiment: {EXPERIMENT_NAME}")
 print(f"Random seed: {RANDOM_SEED}")
@@ -66,6 +79,9 @@ data_with_features = pd.read_csv(
 # Remove timezone info if present (simplifies date comparisons)
 if hasattr(data_with_features.index, 'tz') and data_with_features.index.tz is not None:
     data_with_features.index = data_with_features.index.tz_localize(None)
+
+# Keep full data for time series visualization
+data_full = data_with_features.copy()
 
 print(f"Loaded data shape: {data_with_features.shape}")
 print(f"Date range: {data_with_features.index.min()} to {data_with_features.index.max()}")
@@ -251,14 +267,32 @@ print(f"  MAE:  {mae_openstef:.4f}")
 print(f"  R²:   {r2_openstef:.4f}")
 
 # %%
-# Save results
+# Save training results
 print("\n" + "="*70)
-print("SAVING RESULTS")
+print("SAVING TRAINING RESULTS")
 print("="*70)
 
 # Create experiment output directory
 experiment_dir = Paths.MODELS / EXPERIMENT_NAME
 experiment_dir.mkdir(parents=True, exist_ok=True)
+
+metrics = {
+    'baseline': {
+        'rmse': float(rmse_baseline),
+        'mae': float(mae_baseline),
+        'r2': float(r2_baseline)
+    },
+    'direct_xgb': {
+        'rmse': float(rmse_direct),
+        'mae': float(mae_direct),
+        'r2': float(r2_direct)
+    },
+    'openstef_xgb': {
+        'rmse': float(rmse_openstef),
+        'mae': float(mae_openstef),
+        'r2': float(r2_openstef)
+    }
+}
 
 output_data = {
     'experiment': EXPERIMENT_NAME,
@@ -288,33 +322,17 @@ output_data = {
         'test_start': str(test_data_full.index.min()),
         'test_end': str(test_data_full.index.max())
     },
-    'metrics': {
-        'baseline': {
-            'rmse': float(rmse_baseline),
-            'mae': float(mae_baseline),
-            'r2': float(r2_baseline)
-        },
-        'direct_xgb': {
-            'rmse': float(rmse_direct),
-            'mae': float(mae_direct),
-            'r2': float(r2_direct)
-        },
-        'openstef_xgb': {
-            'rmse': float(rmse_openstef),
-            'mae': float(mae_openstef),
-            'r2': float(r2_openstef)
-        }
-    }
+    'metrics': metrics
 }
 
 output_file = experiment_dir / 'training_results.json'
 with open(output_file, 'w') as f:
     json.dump(output_data, f, indent=2)
 
-print(f"Results saved to: {output_file}")
+print(f"Training results saved to: {output_file}")
 
 # %%
-# Print summary
+# Print training summary
 print("\n" + "="*70)
 print("TRAINING SUMMARY")
 print("="*70)
@@ -324,8 +342,234 @@ print(f"{'Baseline':<20} {rmse_baseline:<12.4f} {mae_baseline:<12.4f} {r2_baseli
 print(f"{'Direct XGBoost':<20} {rmse_direct:<12.4f} {mae_direct:<12.4f} {r2_direct:<12.4f}")
 print(f"{'OpenSTEF XGBoost':<20} {rmse_openstef:<12.4f} {mae_openstef:<12.4f} {r2_openstef:<12.4f}")
 
+# %%
+# ============================================================
+# EVALUATION AND VISUALIZATION
+# ============================================================
+
 print("\n" + "="*70)
-print("TRAINING COMPLETE")
+print("CREATING VISUALIZATIONS")
 print("="*70)
-print(f"\nResults saved to: {output_file}")
-print("\nNext step: Run the evaluation report to generate visualizations")
+
+# %%
+# Visualization 1: Metrics comparison bar chart
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+models = ['Baseline\nPersistence', 'Direct\nXGBoost', 'OpenSTEF\nXGBoost']
+x_pos = np.arange(len(models))
+
+# RMSE comparison
+rmse_vals = [metrics['baseline']['rmse'], metrics['direct_xgb']['rmse'], metrics['openstef_xgb']['rmse']]
+bars = axes[0].bar(x_pos, rmse_vals, color=['gray', 'blue', 'red'], alpha=0.7, edgecolor='black')
+axes[0].set_ylabel('RMSE', fontsize=12)
+axes[0].set_title('RMSE Comparison', fontsize=14, fontweight='bold')
+axes[0].set_xticks(x_pos)
+axes[0].set_xticklabels(models)
+axes[0].grid(axis='y', alpha=0.3)
+for i, (bar, val) in enumerate(zip(bars, rmse_vals)):
+    axes[0].text(bar.get_x() + bar.get_width()/2, val + 0.01*max(rmse_vals),
+                 f'{val:.4f}', ha='center', va='bottom', fontsize=10, fontweight='bold')
+
+# MAE comparison
+mae_vals = [metrics['baseline']['mae'], metrics['direct_xgb']['mae'], metrics['openstef_xgb']['mae']]
+bars = axes[1].bar(x_pos, mae_vals, color=['gray', 'blue', 'red'], alpha=0.7, edgecolor='black')
+axes[1].set_ylabel('MAE', fontsize=12)
+axes[1].set_title('MAE Comparison', fontsize=14, fontweight='bold')
+axes[1].set_xticks(x_pos)
+axes[1].set_xticklabels(models)
+axes[1].grid(axis='y', alpha=0.3)
+for i, (bar, val) in enumerate(zip(bars, mae_vals)):
+    axes[1].text(bar.get_x() + bar.get_width()/2, val + 0.01*max(mae_vals),
+                 f'{val:.4f}', ha='center', va='bottom', fontsize=10, fontweight='bold')
+
+# R² comparison
+r2_vals = [metrics['baseline']['r2'], metrics['direct_xgb']['r2'], metrics['openstef_xgb']['r2']]
+bars = axes[2].bar(x_pos, r2_vals, color=['gray', 'blue', 'red'], alpha=0.7, edgecolor='black')
+axes[2].set_ylabel('R² Score', fontsize=12)
+axes[2].set_title('R² Comparison', fontsize=14, fontweight='bold')
+axes[2].set_xticks(x_pos)
+axes[2].set_xticklabels(models)
+min_r2 = min(r2_vals)
+axes[2].set_ylim([min(0, min_r2 - 0.1), 1])
+axes[2].grid(axis='y', alpha=0.3)
+for i, (bar, val) in enumerate(zip(bars, r2_vals)):
+    axes[2].text(bar.get_x() + bar.get_width()/2, val + 0.01,
+                 f'{val:.4f}', ha='center', va='bottom', fontsize=10, fontweight='bold')
+
+plt.tight_layout()
+plt.show()
+
+# %%
+# Visualization 2: Time series comparison using full data (including NaN values)
+fig, ax = plt.subplots(figsize=(18, 8))
+
+# Get December data from full dataset (with NaN values)
+test_mask_full = (data_full.index.year == target_year) & (data_full.index.month == 12)
+december_full = data_full[test_mask_full]
+
+# Plot true load values from full dataset
+ax.plot(december_full.index, december_full['load'],
+        label='True Load', linewidth=2.5, alpha=0.8, color='black', marker='o', markersize=3)
+
+# Plot predictions only where we have them (on clean data indices)
+december_indices = test_data_full.index
+ax.plot(december_indices, y_pred_baseline,
+        label=f'Baseline - Persistence (RMSE={metrics["baseline"]["rmse"]:.4f}, MAE={metrics["baseline"]["mae"]:.4f})',
+        linewidth=2, alpha=0.6, color='gray', linestyle=':', marker='x', markersize=2)
+
+ax.plot(december_indices, y_pred_direct,
+        label=f'Direct XGBoost (RMSE={metrics["direct_xgb"]["rmse"]:.4f}, MAE={metrics["direct_xgb"]["mae"]:.4f})',
+        linewidth=2, alpha=0.7, color='blue', linestyle='--', marker='s', markersize=2)
+
+ax.plot(december_indices, y_pred_openstef,
+        label=f'OpenSTEF XGBoost (RMSE={metrics["openstef_xgb"]["rmse"]:.4f}, MAE={metrics["openstef_xgb"]["mae"]:.4f})',
+        linewidth=2, alpha=0.7, color='red', linestyle='-.', marker='^', markersize=2)
+
+ax.set_title('December Forecast Comparison: Baseline vs Direct XGBoost vs OpenSTEF XGBoost\n(Jan-Nov Training, December Testing)',
+             fontsize=16, fontweight='bold', pad=20)
+ax.set_xlabel('Date', fontsize=13)
+ax.set_ylabel('Load', fontsize=13)
+ax.legend(loc='best', fontsize=11, framealpha=0.9)
+ax.grid(True, alpha=0.3)
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+plt.show()
+
+# %%
+# Visualization 3: Scatter plots comparing predictions
+fig, axes = plt.subplots(1, 3, figsize=(20, 6))
+
+# Baseline scatter
+axes[0].scatter(y_test, y_pred_baseline, alpha=0.6, s=30,
+                edgecolors='k', linewidth=0.5, color='gray')
+min_val = min(y_test.min(), y_pred_baseline.min())
+max_val = max(y_test.max(), y_pred_baseline.max())
+axes[0].plot([min_val, max_val], [min_val, max_val],
+             'r--', linewidth=2, label='Perfect prediction', alpha=0.7)
+axes[0].set_xlabel('True Load', fontsize=12)
+axes[0].set_ylabel('Predicted Load', fontsize=12)
+axes[0].set_title(f'Baseline - Persistence\n(RMSE={metrics["baseline"]["rmse"]:.4f}, R²={metrics["baseline"]["r2"]:.4f})',
+                  fontsize=13, fontweight='bold')
+axes[0].legend(loc='best')
+axes[0].grid(True, alpha=0.3)
+axes[0].set_aspect('equal', adjustable='box')
+
+# Direct XGBoost scatter
+axes[1].scatter(y_test, y_pred_direct, alpha=0.6, s=30,
+                edgecolors='k', linewidth=0.5, color='blue')
+min_val = min(y_test.min(), y_pred_direct.min())
+max_val = max(y_test.max(), y_pred_direct.max())
+axes[1].plot([min_val, max_val], [min_val, max_val],
+             'r--', linewidth=2, label='Perfect prediction', alpha=0.7)
+axes[1].set_xlabel('True Load', fontsize=12)
+axes[1].set_ylabel('Predicted Load', fontsize=12)
+axes[1].set_title(f'Direct XGBoost\n(RMSE={metrics["direct_xgb"]["rmse"]:.4f}, R²={metrics["direct_xgb"]["r2"]:.4f})',
+                  fontsize=13, fontweight='bold')
+axes[1].legend(loc='best')
+axes[1].grid(True, alpha=0.3)
+axes[1].set_aspect('equal', adjustable='box')
+
+# OpenSTEF scatter
+axes[2].scatter(y_test, y_pred_openstef, alpha=0.6, s=30,
+                edgecolors='k', linewidth=0.5, color='red')
+min_val = min(y_test.min(), y_pred_openstef.min())
+max_val = max(y_test.max(), y_pred_openstef.max())
+axes[2].plot([min_val, max_val], [min_val, max_val],
+             'r--', linewidth=2, label='Perfect prediction', alpha=0.7)
+axes[2].set_xlabel('True Load', fontsize=12)
+axes[2].set_ylabel('Predicted Load', fontsize=12)
+axes[2].set_title(f'OpenSTEF XGBoost\n(RMSE={metrics["openstef_xgb"]["rmse"]:.4f}, R²={metrics["openstef_xgb"]["r2"]:.4f})',
+                  fontsize=13, fontweight='bold')
+axes[2].legend(loc='best')
+axes[2].grid(True, alpha=0.3)
+axes[2].set_aspect('equal', adjustable='box')
+
+plt.tight_layout()
+plt.show()
+
+# %%
+# Visualization 4: Error distribution comparison
+fig, axes = plt.subplots(1, 3, figsize=(20, 6))
+
+# Calculate errors
+errors_baseline = y_test - y_pred_baseline
+errors_direct = y_test - y_pred_direct
+errors_openstef = y_test - y_pred_openstef
+
+# Baseline error distribution
+axes[0].hist(errors_baseline, bins=50, alpha=0.7, color='gray', edgecolor='black')
+axes[0].axvline(0, color='red', linestyle='--', linewidth=2, label='Zero error')
+axes[0].axvline(errors_baseline.mean(), color='green', linestyle='--', linewidth=2,
+                label=f'Mean error: {errors_baseline.mean():.4f}')
+axes[0].set_xlabel('Prediction Error (True - Predicted)', fontsize=12)
+axes[0].set_ylabel('Frequency', fontsize=12)
+axes[0].set_title(f'Baseline - Persistence Error Distribution\n(Std: {errors_baseline.std():.4f})',
+                  fontsize=13, fontweight='bold')
+axes[0].legend(loc='best')
+axes[0].grid(True, alpha=0.3, axis='y')
+
+# Direct XGBoost error distribution
+axes[1].hist(errors_direct, bins=50, alpha=0.7, color='blue', edgecolor='black')
+axes[1].axvline(0, color='red', linestyle='--', linewidth=2, label='Zero error')
+axes[1].axvline(errors_direct.mean(), color='green', linestyle='--', linewidth=2,
+                label=f'Mean error: {errors_direct.mean():.4f}')
+axes[1].set_xlabel('Prediction Error (True - Predicted)', fontsize=12)
+axes[1].set_ylabel('Frequency', fontsize=12)
+axes[1].set_title(f'Direct XGBoost Error Distribution\n(Std: {errors_direct.std():.4f})',
+                  fontsize=13, fontweight='bold')
+axes[1].legend(loc='best')
+axes[1].grid(True, alpha=0.3, axis='y')
+
+# OpenSTEF error distribution
+axes[2].hist(errors_openstef, bins=50, alpha=0.7, color='red', edgecolor='black')
+axes[2].axvline(0, color='red', linestyle='--', linewidth=2, label='Zero error')
+axes[2].axvline(errors_openstef.mean(), color='green', linestyle='--', linewidth=2,
+                label=f'Mean error: {errors_openstef.mean():.4f}')
+axes[2].set_xlabel('Prediction Error (True - Predicted)', fontsize=12)
+axes[2].set_ylabel('Frequency', fontsize=12)
+axes[2].set_title(f'OpenSTEF XGBoost Error Distribution\n(Std: {errors_openstef.std():.4f})',
+                  fontsize=13, fontweight='bold')
+axes[2].legend(loc='best')
+axes[2].grid(True, alpha=0.3, axis='y')
+
+plt.tight_layout()
+plt.show()
+
+# %%
+# Export metrics for DVC tracking
+print("\n" + "="*70)
+print("EXPORTING METRICS FOR DVC TRACKING")
+print("="*70)
+
+metrics_output = {
+    'experiment': EXPERIMENT_NAME,
+    'metrics': metrics
+}
+
+# Save metrics
+metrics_dir = Path('metrics')
+metrics_dir.mkdir(exist_ok=True)
+metrics_file = metrics_dir / f'{EXPERIMENT_NAME}_evaluation.json'
+
+with open(metrics_file, 'w') as f:
+    json.dump(metrics_output, f, indent=2)
+
+print(f"Metrics saved to: {metrics_file}")
+
+# %%
+print("\n" + "="*70)
+print("TRAINING AND EVALUATION COMPLETE")
+print("="*70)
+print(f"\nAnalyzed December {target_year} test period")
+print(f"Compared 3 models: Baseline, Direct XGBoost, OpenSTEF XGBoost")
+print(f"Training results saved to: {output_file}")
+print(f"Metrics exported to: {metrics_file}")
+
+# Calculate improvements
+rmse_improvement_direct = ((metrics['baseline']['rmse'] - metrics['direct_xgb']['rmse']) / metrics['baseline']['rmse']) * 100
+rmse_improvement_openstef = ((metrics['baseline']['rmse'] - metrics['openstef_xgb']['rmse']) / metrics['baseline']['rmse']) * 100
+
+print("\nKey Findings:")
+print(f"  - Best RMSE: {min(rmse_vals):.4f} ({models[rmse_vals.index(min(rmse_vals))].replace(chr(10), ' ')})")
+print(f"  - Direct XGBoost RMSE improvement over baseline: {rmse_improvement_direct:+.2f}%")
+print(f"  - OpenSTEF XGBoost RMSE improvement over baseline: {rmse_improvement_openstef:+.2f}%")
