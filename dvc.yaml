@@ -100,6 +100,19 @@ stages:
       - reports/markdown/06_multi_horizon_quarterly_files:
           cache: false
 
+  # 07: Train TabPFN vs XGBoost Multi-Horizon Models (Quarterly)
+  train_07_tabpfn_xgboost_multi_horizon:
+    cmd: uv run python jobs/07_tabpfn_xgboost_multi_horizon.py
+    deps:
+      - jobs/07_tabpfn_xgboost_multi_horizon.py
+      - data/processed/data_with_features.csv
+    metrics:
+      - metrics/multi_horizon_quarterly_evaluation.json:
+          cache: false
+    outs:
+      - models/multi_horizon_quarterly/training_results.json:
+          cache: false
+
   # # 10: Train TabPFN vs XGBoost Multi-Horizon Models (Quarterly)
   # train_tabpfn_xgboost_quarterly:
   #   cmd: uv run python jobs/10_tabpfn_xgboost.py
