@@ -107,6 +107,8 @@
     ======================================================================
     SPLITTING DATA INTO TRAIN/TEST BY QUARTERS
     ======================================================================
+
+
     
     Combined train size: 25843 rows (across 4 quarters)
     Combined test size: 5482 rows
@@ -365,6 +367,93 @@
 
     
     ======================================================================
+    FEATURE IMPORTANCE ANALYSIS (ALL HORIZONS)
+    ======================================================================
+    
+    Horizon 1 (15min):
+      Total features: 132
+      Non-zero importance (weight): 110
+      Top 3 features (gain): T-15min, T-30min, gti
+    
+    Horizon 2 (30min):
+      Total features: 132
+      Non-zero importance (weight): 110
+      Top 3 features (gain): T-15min, T-30min, time0fday_sine
+    
+    Horizon 3 (45min):
+      Total features: 132
+      Non-zero importance (weight): 107
+      Top 3 features (gain): T-15min, T-30min, time0fday_sine
+    
+    Horizon 4 (60min):
+      Total features: 132
+      Non-zero importance (weight): 112
+      Top 3 features (gain): T-15min, T-30min, time0fday_sine
+    
+    Horizon 5 (75min):
+      Total features: 132
+      Non-zero importance (weight): 113
+      Top 3 features (gain): T-15min, T-30min, time0fday_sine
+    
+    Horizon 6 (90min):
+      Total features: 132
+      Non-zero importance (weight): 112
+      Top 3 features (gain): T-15min, daylight_continuous, time0fday_sine
+    
+    Horizon 7 (105min):
+      Total features: 132
+      Non-zero importance (weight): 113
+      Top 3 features (gain): daylight_continuous, T-15min, T-1320min
+    
+    Horizon 8 (120min):
+      Total features: 132
+      Non-zero importance (weight): 111
+      Top 3 features (gain): daylight_continuous, T-15min, T-1320min
+
+
+    
+    ======================================================================
+    VISUALIZING TOP 10 FEATURES PER HORIZON
+    ======================================================================
+    
+    Creating visualization for: weight
+
+
+
+    
+![png](06_multi_horizon_quarterly_files/06_multi_horizon_quarterly_18_1.png)
+    
+
+
+    
+    Creating visualization for: gain
+
+
+
+    
+![png](06_multi_horizon_quarterly_files/06_multi_horizon_quarterly_18_3.png)
+    
+
+
+    
+    Creating visualization for: cover
+
+
+
+    
+![png](06_multi_horizon_quarterly_files/06_multi_horizon_quarterly_18_5.png)
+    
+
+
+    
+    ======================================================================
+    SAVING FEATURE IMPORTANCE DATA
+    ======================================================================
+    Feature importance saved to: /home/chris/research/load-forecast/models/multi_horizon_quarterly/feature_importance.json
+
+
+    
+    ======================================================================
     PER-QUARTER METRICS BY HORIZON
     ======================================================================
     
@@ -400,19 +489,19 @@
 
 
     
-![png](06_multi_horizon_quarterly_files/06_multi_horizon_quarterly_18_1.png)
+![png](06_multi_horizon_quarterly_files/06_multi_horizon_quarterly_21_1.png)
     
 
 
     
     ======================================================================
-    HEATMAP: RMSE BY QUARTER AND HORIZON (Direct XGBoost)
+    HEATMAPS: METRICS BY QUARTER AND HORIZON (Direct XGBoost)
     ======================================================================
 
 
 
     
-![png](06_multi_horizon_quarterly_files/06_multi_horizon_quarterly_19_1.png)
+![png](06_multi_horizon_quarterly_files/06_multi_horizon_quarterly_22_1.png)
     
 
 

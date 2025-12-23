@@ -618,7 +618,7 @@ print("\n" + "="*70)
 print("PERFORMANCE DEGRADATION ANALYSIS")
 print("="*70)
 
-fig, axes = plt.subplots(1, 2, figsize=(18, 6))
+fig, axes = plt.subplots(1, 3, figsize=(24, 6))
 
 for model, label, color, marker in zip(models, model_labels, colors, markers):
     # RMSE increase (%)
@@ -629,12 +629,20 @@ for model, label, color, marker in zip(models, model_labels, colors, markers):
     axes[0].plot(horizon_minutes, rmse_increase, label=label, color=color, marker=marker,
                  linewidth=2.5, markersize=8, alpha=0.8)
 
+    # MAE increase (%)
+    mae_vals = [h['metrics'][model]['mae'] for h in horizon_results]
+    mae_h1 = mae_vals[0]
+    mae_increase = [(m - mae_h1) / mae_h1 * 100 for m in mae_vals]
+
+    axes[1].plot(horizon_minutes, mae_increase, label=label, color=color, marker=marker,
+                 linewidth=2.5, markersize=8, alpha=0.8)
+
     # R² decrease
     r2_vals = [h['metrics'][model]['r2'] for h in horizon_results]
     r2_h1 = r2_vals[0]
     r2_decrease = [(r2_h1 - r) for r in r2_vals]
 
-    axes[1].plot(horizon_minutes, r2_decrease, label=label, color=color, marker=marker,
+    axes[2].plot(horizon_minutes, r2_decrease, label=label, color=color, marker=marker,
                  linewidth=2.5, markersize=8, alpha=0.8)
 
 axes[0].set_xlabel('Forecast Horizon (minutes)', fontsize=12)
@@ -646,12 +654,20 @@ axes[0].set_xticks(horizon_minutes)
 axes[0].axhline(y=0, color='black', linestyle='--', linewidth=1, alpha=0.5)
 
 axes[1].set_xlabel('Forecast Horizon (minutes)', fontsize=12)
-axes[1].set_ylabel('R² Decrease', fontsize=12)
-axes[1].set_title('R² Degradation from Horizon 1', fontsize=14, fontweight='bold')
+axes[1].set_ylabel('MAE Increase (%)', fontsize=12)
+axes[1].set_title('MAE Degradation from Horizon 1', fontsize=14, fontweight='bold')
 axes[1].legend(fontsize=11)
 axes[1].grid(True, alpha=0.3)
 axes[1].set_xticks(horizon_minutes)
 axes[1].axhline(y=0, color='black', linestyle='--', linewidth=1, alpha=0.5)
+
+axes[2].set_xlabel('Forecast Horizon (minutes)', fontsize=12)
+axes[2].set_ylabel('R² Decrease', fontsize=12)
+axes[2].set_title('R² Degradation from Horizon 1', fontsize=14, fontweight='bold')
+axes[2].legend(fontsize=11)
+axes[2].grid(True, alpha=0.3)
+axes[2].set_xticks(horizon_minutes)
+axes[2].axhline(y=0, color='black', linestyle='--', linewidth=1, alpha=0.5)
 
 plt.tight_layout()
 plt.show()
@@ -668,7 +684,153 @@ for model, label in zip(models, model_labels):
     print(f"{label:<18} RMSE: +{rmse_increase_pct:.1f}%  |  R²: -{r2_decrease:.4f}")
 
 # %%
-# SECTION 2: PER-QUARTER METRICS BY HORIZON
+# SECTION 2: FEATURE IMPORTANCE ANALYSIS
+print("\n" + "="*70)
+print("FEATURE IMPORTANCE ANALYSIS (ALL HORIZONS)")
+print("="*70)
+
+# Extract feature importance for all horizons
+horizon_importances = []
+
+for horizon, X_all, y_all, split_type_all in all_horizon_datasets:
+    # Get the trained model for this horizon
+    direct_model_h = horizon_models['direct_xgb'][horizon - 1]
+
+    # Get feature names
+    feature_names = X_all.columns.tolist()
+
+    # Get the booster to access different importance types
+    booster = direct_model_h.get_booster()
+
+    # Get importance scores using get_score with fmap to get actual feature names
+    # First, get the scores with default feature names
+    importance_weight_dict = booster.get_score(importance_type='weight')
+    importance_gain_dict = booster.get_score(importance_type='gain')
+    importance_cover_dict = booster.get_score(importance_type='cover')
+
+    # Map feature indices to scores
+    # XGBoost may use feature names from the booster's internal feature_names or 'f0', 'f1', etc.
+    weight_scores = np.zeros(len(feature_names))
+    gain_scores = np.zeros(len(feature_names))
+    cover_scores = np.zeros(len(feature_names))
+
+    # Try to match features - XGBoost might use actual feature names or f0, f1, etc.
+    for i, fname in enumerate(feature_names):
+        # Try with actual feature name first
+        if fname in importance_weight_dict:
+            weight_scores[i] = importance_weight_dict[fname]
+            gain_scores[i] = importance_gain_dict.get(fname, 0)
+            cover_scores[i] = importance_cover_dict.get(fname, 0)
+        # Try with f{i} format
+        elif f'f{i}' in importance_weight_dict:
+            weight_scores[i] = importance_weight_dict[f'f{i}']
+            gain_scores[i] = importance_gain_dict.get(f'f{i}', 0)
+            cover_scores[i] = importance_cover_dict.get(f'f{i}', 0)
+
+    horizon_importances.append({
+        'horizon': horizon,
+        'horizon_minutes': horizon * 15,
+        'feature_names': feature_names,
+        'weight': weight_scores,
+        'gain': gain_scores,
+        'cover': cover_scores
+    })
+
+    print(f"\nHorizon {horizon} ({horizon * 15}min):")
+    print(f"  Total features: {len(feature_names)}")
+    print(f"  Non-zero importance (weight): {np.sum(weight_scores > 0)}")
+    if np.sum(gain_scores > 0) > 0:
+        top_3_idx = np.argsort(gain_scores)[-3:][::-1]
+        print(f"  Top 3 features (gain): {', '.join([feature_names[i] for i in top_3_idx if gain_scores[i] > 0])}")
+    else:
+        print("  Warning: No feature importances found!")
+
+# %%
+# Visualization: Top 10 features per horizon for each importance type
+print("\n" + "="*70)
+print("VISUALIZING TOP 10 FEATURES PER HORIZON")
+print("="*70)
+
+importance_types = ['weight', 'gain', 'cover']
+importance_titles = ['Feature Importance (Weight)', 'Feature Importance (Gain)', 'Feature Importance (Cover)']
+
+for imp_type, imp_title in zip(importance_types, importance_titles):
+    print(f"\nCreating visualization for: {imp_type}")
+
+    # Create subplot grid: 2 rows x 4 cols for 8 horizons
+    fig, axes = plt.subplots(2, 4, figsize=(24, 12))
+    axes = axes.flatten()
+
+    for idx, h_imp in enumerate(horizon_importances):
+        ax = axes[idx]
+        horizon = h_imp['horizon']
+        horizon_min = h_imp['horizon_minutes']
+        feature_names = h_imp['feature_names']
+        importance_scores = h_imp[imp_type]
+
+        # Get top 10 features
+        top_10_indices = np.argsort(importance_scores)[-10:][::-1]
+        top_10_features = [feature_names[i] for i in top_10_indices]
+        top_10_scores = importance_scores[top_10_indices]
+
+        # Plot horizontal bar chart
+        y_pos = np.arange(len(top_10_features))
+        ax.barh(y_pos, top_10_scores, alpha=0.8, color='steelblue')
+        ax.set_yticks(y_pos)
+        ax.set_yticklabels(top_10_features, fontsize=9)
+        ax.invert_yaxis()  # Highest at top
+        ax.set_xlabel(imp_type.capitalize(), fontsize=10)
+        ax.set_title(f'H{horizon} ({horizon_min}min)', fontsize=11, fontweight='bold')
+        ax.grid(axis='x', alpha=0.3)
+
+    fig.suptitle(imp_title, fontsize=16, fontweight='bold', y=0.995)
+    plt.tight_layout()
+    plt.show()
+
+# %%
+# Save feature importance data
+print("\n" + "="*70)
+print("SAVING FEATURE IMPORTANCE DATA")
+print("="*70)
+
+importance_output = {
+    'experiment': EXPERIMENT_NAME,
+    'timestamp': datetime.now().isoformat(),
+    'description': 'Feature importance for multi-horizon XGBoost models (weight, gain, cover)',
+    'horizon_importances': []
+}
+
+for h_imp in horizon_importances:
+    # Get top 20 features for each importance type
+    top_20_weight_idx = np.argsort(h_imp['weight'])[-20:][::-1]
+    top_20_gain_idx = np.argsort(h_imp['gain'])[-20:][::-1]
+    top_20_cover_idx = np.argsort(h_imp['cover'])[-20:][::-1]
+
+    importance_output['horizon_importances'].append({
+        'horizon': h_imp['horizon'],
+        'horizon_minutes': h_imp['horizon_minutes'],
+        'top_20_weight': [
+            {'feature': h_imp['feature_names'][i], 'score': float(h_imp['weight'][i])}
+            for i in top_20_weight_idx
+        ],
+        'top_20_gain': [
+            {'feature': h_imp['feature_names'][i], 'score': float(h_imp['gain'][i])}
+            for i in top_20_gain_idx
+        ],
+        'top_20_cover': [
+            {'feature': h_imp['feature_names'][i], 'score': float(h_imp['cover'][i])}
+            for i in top_20_cover_idx
+        ]
+    })
+
+importance_file = experiment_dir / 'feature_importance.json'
+with open(importance_file, 'w') as f:
+    json.dump(importance_output, f, indent=2)
+
+print(f"Feature importance saved to: {importance_file}")
+
+# %%
+# SECTION 3: PER-QUARTER METRICS BY HORIZON
 print("\n" + "="*70)
 print("PER-QUARTER METRICS BY HORIZON")
 print("="*70)
@@ -724,9 +886,9 @@ plt.tight_layout()
 plt.show()
 
 # %%
-# Visualization 4: Horizon comparison heatmap (Direct XGB RMSE)
+# Visualization 4: Horizon comparison heatmaps (Direct XGB - RMSE, MAE, R²)
 print("\n" + "="*70)
-print("HEATMAP: RMSE BY QUARTER AND HORIZON (Direct XGBoost)")
+print("HEATMAPS: METRICS BY QUARTER AND HORIZON (Direct XGBoost)")
 print("="*70)
 
 # Prepare data for heatmap
@@ -734,20 +896,47 @@ quarter_labels = [q['quarter_label'] for q in per_quarter_per_horizon_results]
 horizon_labels = [f"H{h['horizon']}\n({h['horizon_minutes']}min)"
                   for h in per_quarter_per_horizon_results[0]['horizon_results']]
 
-# Create matrix of RMSE values (Direct XGB)
+# Create matrices for all metrics (Direct XGB)
 rmse_matrix = []
+mae_matrix = []
+r2_matrix = []
+
 for q_result in per_quarter_per_horizon_results:
     rmse_row = [h['metrics']['direct_xgb']['rmse'] for h in q_result['horizon_results']]
+    mae_row = [h['metrics']['direct_xgb']['mae'] for h in q_result['horizon_results']]
+    r2_row = [h['metrics']['direct_xgb']['r2'] for h in q_result['horizon_results']]
     rmse_matrix.append(rmse_row)
+    mae_matrix.append(mae_row)
+    r2_matrix.append(r2_row)
 
 rmse_df = pd.DataFrame(rmse_matrix, index=quarter_labels, columns=horizon_labels)
+mae_df = pd.DataFrame(mae_matrix, index=quarter_labels, columns=horizon_labels)
+r2_df = pd.DataFrame(r2_matrix, index=quarter_labels, columns=horizon_labels)
 
-fig, ax = plt.subplots(figsize=(14, 6))
-sns.heatmap(rmse_df, annot=True, fmt='.4f', cmap='YlOrRd', ax=ax,
+# Plot all three heatmaps
+fig, axes = plt.subplots(1, 3, figsize=(28, 6))
+
+# RMSE Heatmap
+sns.heatmap(rmse_df, annot=True, fmt='.4f', cmap='YlOrRd', ax=axes[0],
             cbar_kws={'label': 'RMSE'}, linewidths=0.5)
-ax.set_title('Direct XGBoost RMSE by Quarter and Horizon', fontsize=14, fontweight='bold')
-ax.set_xlabel('Forecast Horizon', fontsize=12)
-ax.set_ylabel('Quarter', fontsize=12)
+axes[0].set_title('Direct XGBoost RMSE by Quarter and Horizon', fontsize=14, fontweight='bold')
+axes[0].set_xlabel('Forecast Horizon', fontsize=12)
+axes[0].set_ylabel('Quarter', fontsize=12)
+
+# MAE Heatmap
+sns.heatmap(mae_df, annot=True, fmt='.4f', cmap='YlOrRd', ax=axes[1],
+            cbar_kws={'label': 'MAE'}, linewidths=0.5)
+axes[1].set_title('Direct XGBoost MAE by Quarter and Horizon', fontsize=14, fontweight='bold')
+axes[1].set_xlabel('Forecast Horizon', fontsize=12)
+axes[1].set_ylabel('Quarter', fontsize=12)
+
+# R² Heatmap (use reversed colormap - higher is better)
+sns.heatmap(r2_df, annot=True, fmt='.4f', cmap='RdYlGn', ax=axes[2],
+            cbar_kws={'label': 'R² Score'}, linewidths=0.5)
+axes[2].set_title('Direct XGBoost R² by Quarter and Horizon', fontsize=14, fontweight='bold')
+axes[2].set_xlabel('Forecast Horizon', fontsize=12)
+axes[2].set_ylabel('Quarter', fontsize=12)
+
 plt.tight_layout()
 plt.show()
 

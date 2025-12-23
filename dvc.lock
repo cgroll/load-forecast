@@ -562,8 +562,8 @@ stages:
       size: 56426133
     - path: jobs/06_multi_horizon_quarterly.py
       hash: md5
-      md5: bd38fb1b497202da3cc293d3fc1226a1
-      size: 30789
+      md5: db88eaed418dc61c2b206c51ef6d9988
+      size: 38365
     - path: tools/generate_report.sh
       hash: md5
       md5: 505625a6a31e35f4bd6c91d11ca8bf6a
@@ -576,19 +576,19 @@ stages:
       size: 6498
     - path: models/multi_horizon_quarterly
       hash: md5
-      md5: 557bb1c8cd5e68bb8a68591402941ace.dir
-      size: 21323
-      nfiles: 1
+      md5: 18c8124ca57e09a49aac08d60c05e3c8.dir
+      size: 64646
+      nfiles: 2
     - path: reports/html/06_multi_horizon_quarterly.html
       hash: md5
-      md5: 9399edee408afccbae0263829e55850e
-      size: 848772
+      md5: 9ce4c5ae9914c582042ada0f23ad7070
+      size: 1544632
     - path: reports/markdown/06_multi_horizon_quarterly.md
       hash: md5
-      md5: eeff379a30eb3df93436e21bf812c013
-      size: 18116
+      md5: db6b5fa7fd61e9d35e2f604bf77290f5
+      size: 20510
     - path: reports/markdown/06_multi_horizon_quarterly_files
       hash: md5
-      md5: e1837a2e819a472cd4ebdd367d3af8c5.dir
-      size: 413670
-      nfiles: 4
+      md5: d92800504cc0164b849bbb35e520081d.dir
+      size: 932393
+      nfiles: 7
