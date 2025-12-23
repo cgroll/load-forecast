@@ -123,3 +123,29 @@ stages:
           cache: false
       - reports/markdown/09_evaluate_multi_horizon_quarterly_files:
           cache: false
+
+  # 10: Train TabPFN vs XGBoost Multi-Horizon Models (Quarterly)
+  train_tabpfn_xgboost_quarterly:
+    cmd: uv run python jobs/10_tabpfn_xgboost.py
+    deps:
+      - jobs/10_tabpfn_xgboost.py
+      - data/processed/data_with_features.csv
+    outs:
+      - models/tabpfn_xgboost_quarterly
+
+  # 11: Evaluate TabPFN vs XGBoost Multi-Horizon Models (Quarterly)
+  report_11_evaluation_tabpfn_xgboost:
+    cmd: bash tools/generate_report.sh 11_evaluation_tabpfn_xgboost reports_src/11_evaluation_tabpfn_xgboost.py
+    deps:
+      - reports_src/11_evaluation_tabpfn_xgboost.py
+      - models/tabpfn_xgboost_quarterly/training_results.json
+      - tools/generate_report.sh
+    metrics:
+      - metrics/tabpfn_xgboost_quarterly_evaluation.json
+    outs:
+      - reports/html/11_evaluation_tabpfn_xgboost.html:
+          cache: false
+      - reports/markdown/11_evaluation_tabpfn_xgboost.md:
+          cache: false
+      - reports/markdown/11_evaluation_tabpfn_xgboost_files:
+          cache: false
