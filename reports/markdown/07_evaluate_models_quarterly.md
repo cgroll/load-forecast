@@ -11,7 +11,7 @@
     
     Loading results from: /home/chris/research/load-forecast/models/quarterly_split/training_results.json
     Loaded results for combined model
-    Training timestamp: 2025-12-23T09:32:37.047522
+    Training timestamp: 2025-12-23T11:41:26.576304
     Description: Combined model trained on all quarters, evaluated on each quarter separately
     Quarters evaluated: 4
 
@@ -60,77 +60,88 @@
       - OpenSTEF XGBoost...
 
 
-    [0]	validation_0-rmse:1.36278	validation_1-rmse:1.42102
+    [0]	validation_0-rmse:1.35744	validation_1-rmse:1.47545
 
 
-    [1]	validation_0-rmse:0.99345	validation_1-rmse:1.05672
+    [1]	validation_0-rmse:0.99237	validation_1-rmse:1.10299
 
 
-    [2]	validation_0-rmse:0.74509	validation_1-rmse:0.81884
+    [2]	validation_0-rmse:0.74694	validation_1-rmse:0.84939
 
 
-    [3]	validation_0-rmse:0.58266	validation_1-rmse:0.67092
+    [3]	validation_0-rmse:0.58676	validation_1-rmse:0.68989
 
 
-    [4]	validation_0-rmse:0.47914	validation_1-rmse:0.58428
+    [4]	validation_0-rmse:0.48592	validation_1-rmse:0.58991
 
 
-    [5]	validation_0-rmse:0.41649	validation_1-rmse:0.53548
+    [5]	validation_0-rmse:0.42347	validation_1-rmse:0.52755
 
 
-    [6]	validation_0-rmse:0.37794	validation_1-rmse:0.50893
+    [6]	validation_0-rmse:0.38533	validation_1-rmse:0.49358
 
 
-    [7]	validation_0-rmse:0.35392	validation_1-rmse:0.49581
+    [7]	validation_0-rmse:0.36171	validation_1-rmse:0.47293
 
 
-    [8]	validation_0-rmse:0.33949	validation_1-rmse:0.48994
+    [8]	validation_0-rmse:0.34770	validation_1-rmse:0.46215
 
 
-    [9]	validation_0-rmse:0.32879	validation_1-rmse:0.49019
+    [9]	validation_0-rmse:0.33662	validation_1-rmse:0.45568
 
 
-    [10]	validation_0-rmse:0.31980	validation_1-rmse:0.48919
+    [10]	validation_0-rmse:0.32998	validation_1-rmse:0.45053
 
 
-    [11]	validation_0-rmse:0.31326	validation_1-rmse:0.49067
+    [11]	validation_0-rmse:0.32446	validation_1-rmse:0.44924
 
 
-    [12]	validation_0-rmse:0.30749	validation_1-rmse:0.49220
+    [12]	validation_0-rmse:0.31969	validation_1-rmse:0.44766
 
 
-    [13]	validation_0-rmse:0.30267	validation_1-rmse:0.49220
+    [13]	validation_0-rmse:0.31586	validation_1-rmse:0.44636
 
 
-    [14]	validation_0-rmse:0.29870	validation_1-rmse:0.49210
+    [14]	validation_0-rmse:0.31150	validation_1-rmse:0.44607
 
 
-    [15]	validation_0-rmse:0.29495	validation_1-rmse:0.49206
+    [15]	validation_0-rmse:0.30637	validation_1-rmse:0.44584
 
 
-    [16]	validation_0-rmse:0.29151	validation_1-rmse:0.49168
+    [16]	validation_0-rmse:0.30343	validation_1-rmse:0.44650
 
 
-    [17]	validation_0-rmse:0.28901	validation_1-rmse:0.49157
+    [17]	validation_0-rmse:0.29956	validation_1-rmse:0.44645
 
 
-    [18]	validation_0-rmse:0.28568	validation_1-rmse:0.49243
+    [18]	validation_0-rmse:0.29681	validation_1-rmse:0.44680
 
 
-    [19]	validation_0-rmse:0.28118	validation_1-rmse:0.49327
+    [19]	validation_0-rmse:0.29472	validation_1-rmse:0.44741
 
 
-    [20]	validation_0-rmse:0.27779	validation_1-rmse:0.49305
+    [20]	validation_0-rmse:0.29094	validation_1-rmse:0.44736
+
+
+    [21]	validation_0-rmse:0.28768	validation_1-rmse:0.44728
+
+
+    [22]	validation_0-rmse:0.28582	validation_1-rmse:0.44770
+
+
+    [23]	validation_0-rmse:0.28331	validation_1-rmse:0.44789
+
+
+    [24]	validation_0-rmse:0.27971	validation_1-rmse:0.44775
+
+
+    [25]	validation_0-rmse:0.27668	validation_1-rmse:0.44900
 
 
     
     Generating predictions for each quarter's test set...
       Q1 2023...
-
-
       Q2 2023...
-
-
       Q3 2023...
 
 
@@ -155,8 +166,8 @@
     Model              RMSE         MAE          R²          
     ------------------------------------------------------
     baseline           0.3903       0.2095       0.9557      
-    direct_xgb         0.3775       0.1978       0.9585      
-    openstef_xgb       0.3859       0.2033       0.9566      
+    direct_xgb         0.3788       0.1990       0.9582      
+    openstef_xgb       0.3892       0.2044       0.9559      
 
 
 
@@ -197,20 +208,20 @@
     Quarter         Model              RMSE         MAE          R²          
     ---------------------------------------------------------------------------
     Q1 2023         baseline           0.4823       0.2502       0.9096      
-    Q1 2023         direct_xgb         0.4574       0.2278       0.9187      
-    Q1 2023         openstef_xgb       0.4517       0.2296       0.9207      
+    Q1 2023         direct_xgb         0.4587       0.2322       0.9182      
+    Q1 2023         openstef_xgb       0.4726       0.2378       0.9132      
     ---------------------------------------------------------------------------
     Q2 2023         baseline           0.4159       0.2504       0.9682      
-    Q2 2023         direct_xgb         0.3969       0.2309       0.9711      
-    Q2 2023         openstef_xgb       0.4133       0.2349       0.9686      
+    Q2 2023         direct_xgb         0.3991       0.2306       0.9707      
+    Q2 2023         openstef_xgb       0.4031       0.2327       0.9702      
     ---------------------------------------------------------------------------
     Q3 2023         baseline           0.4076       0.2256       0.9069      
-    Q3 2023         direct_xgb         0.3985       0.2149       0.9110      
-    Q3 2023         openstef_xgb       0.4105       0.2173       0.9056      
+    Q3 2023         direct_xgb         0.3993       0.2147       0.9107      
+    Q3 2023         openstef_xgb       0.4183       0.2214       0.9020      
     ---------------------------------------------------------------------------
     Q4 2023         baseline           0.1928       0.1116       0.9559      
-    Q4 2023         direct_xgb         0.2104       0.1175       0.9475      
-    Q4 2023         openstef_xgb       0.2279       0.1312       0.9384      
+    Q4 2023         direct_xgb         0.2115       0.1184       0.9469      
+    Q4 2023         openstef_xgb       0.2120       0.1256       0.9467      
     ---------------------------------------------------------------------------
 
 
@@ -238,6 +249,6 @@
     
     Overall Results (All Test Data Combined):
       BASELINE: RMSE=0.3903, MAE=0.2095, R²=0.9557
-      DIRECT_XGB: RMSE=0.3775, MAE=0.1978, R²=0.9585
-      OPENSTEF_XGB: RMSE=0.3859, MAE=0.2033, R²=0.9566
+      DIRECT_XGB: RMSE=0.3788, MAE=0.1990, R²=0.9582
+      OPENSTEF_XGB: RMSE=0.3892, MAE=0.2044, R²=0.9559
 

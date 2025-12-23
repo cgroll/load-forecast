@@ -97,3 +97,29 @@ stages:
           cache: false
       - reports/markdown/07_evaluate_models_quarterly_files:
           cache: false
+
+  # 08: Train Multi-Horizon Models (Quarterly)
+  train_multi_horizon_quarterly:
+    cmd: uv run python jobs/08_multi_horizon_quarterly.py
+    deps:
+      - jobs/08_multi_horizon_quarterly.py
+      - data/processed/data_with_features.csv
+    outs:
+      - models/multi_horizon_quarterly
+
+  # 09: Evaluate Multi-Horizon Models (Quarterly)
+  report_09_evaluate_multi_horizon_quarterly:
+    cmd: bash tools/generate_report.sh 09_evaluate_multi_horizon_quarterly reports_src/09_evaluate_multi_horizon_quarterly.py
+    deps:
+      - reports_src/09_evaluate_multi_horizon_quarterly.py
+      - models/multi_horizon_quarterly/training_results.json
+      - tools/generate_report.sh
+    metrics:
+      - metrics/multi_horizon_quarterly_evaluation.json
+    outs:
+      - reports/html/09_evaluate_multi_horizon_quarterly.html:
+          cache: false
+      - reports/markdown/09_evaluate_multi_horizon_quarterly.md:
+          cache: false
+      - reports/markdown/09_evaluate_multi_horizon_quarterly_files:
+          cache: false
