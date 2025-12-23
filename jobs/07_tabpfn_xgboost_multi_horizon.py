@@ -304,6 +304,12 @@ horizon_models = {
     'direct_xgb': []
 }
 
+# Store predictions to avoid redundant inference
+horizon_predictions = {
+    'tabpfn': [],
+    'direct_xgb': []
+}
+
 horizon_results = []
 
 for horizon, X_all, y_all, split_type_all in all_horizon_datasets:
@@ -330,7 +336,7 @@ for horizon, X_all, y_all, split_type_all in all_horizon_datasets:
     print(f"  Fitting TabPFN model (foundation model for tabular data)...")
     tabpfn_model.fit(X_train, y_train)
 
-    print(f"  Making predictions...")
+    print(f"  Making predictions (single pass)...")
     y_pred_tabpfn = tabpfn_model.predict(X_test)
 
     rmse_tabpfn = np.sqrt(mean_squared_error(y_test, y_pred_tabpfn))
@@ -364,9 +370,13 @@ for horizon, X_all, y_all, split_type_all in all_horizon_datasets:
 
     print(f"  RMSE: {rmse_direct:.4f}, MAE: {mae_direct:.4f}, R²: {r2_direct:.4f}")
 
-    # Store models and results
+    # Store models and predictions (indexed by test set index for reuse)
     horizon_models['tabpfn'].append(tabpfn_model)
     horizon_models['direct_xgb'].append(direct_model)
+
+    # Store predictions as Series with original indices for efficient quarterly lookup
+    horizon_predictions['tabpfn'].append(pd.Series(y_pred_tabpfn, index=y_test.index))
+    horizon_predictions['direct_xgb'].append(pd.Series(y_pred_direct, index=y_test.index))
 
     horizon_results.append({
         'horizon': horizon,
@@ -389,6 +399,7 @@ for horizon, X_all, y_all, split_type_all in all_horizon_datasets:
 
 # %%
 # Evaluate models on each quarter's test data separately for each horizon
+# OPTIMIZED: Reuse predictions from stored arrays instead of re-predicting
 print(f"\n{'='*70}")
 print("EVALUATING ON INDIVIDUAL QUARTERLY TEST SETS (ALL HORIZONS)")
 print(f"{'='*70}")
@@ -400,7 +411,7 @@ for qinfo in quarter_info:
 
     quarter_horizon_results = []
 
-    for horizon, X_all, y_all, split_type_all in all_horizon_datasets:
+    for idx, (horizon, X_all, y_all, split_type_all) in enumerate(all_horizon_datasets):
         # Filter for this quarter's test data
         # We need to match the test indices from this quarter
         test_start = pd.Timestamp(qinfo['test_start'])
@@ -412,16 +423,12 @@ for qinfo in quarter_info:
         if quarter_mask.sum() == 0:
             continue
 
-        X_test_q = X_all[quarter_mask]
         y_test_q = y_all[quarter_mask]
 
-        # TabPFN predictions for this quarter and horizon
-        tabpfn_model_h = horizon_models['tabpfn'][horizon - 1]
-        y_pred_tabpfn_q = tabpfn_model_h.predict(X_test_q)
-
-        # XGBoost predictions for this quarter and horizon
-        direct_model_h = horizon_models['direct_xgb'][horizon - 1]
-        y_pred_direct_q = direct_model_h.predict(X_test_q)
+        # Retrieve stored predictions for this quarter (NO REDUNDANT INFERENCE!)
+        # Use index-based lookup from pre-computed predictions
+        y_pred_tabpfn_q = horizon_predictions['tabpfn'][idx].loc[y_test_q.index]
+        y_pred_direct_q = horizon_predictions['direct_xgb'][idx].loc[y_test_q.index]
 
         # Calculate metrics
         metrics_q_h = {
