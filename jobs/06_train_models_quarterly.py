@@ -214,134 +214,38 @@ experiment_dir.mkdir(parents=True, exist_ok=True)
 print(f"\nExperiment directory: {experiment_dir}")
 
 # %%
-# Train models for each quarter
-results = []
+# Prepare train/test splits for each quarter
+print(f"\n{'='*70}")
+print("PREPARING TRAIN/TEST SPLITS FOR EACH QUARTER")
+print(f"{'='*70}")
+
+all_X_train = []
+all_y_train = []
+all_X_test = []
+all_y_test = []
+all_test_indices = []
+quarter_split_info = []
 
 for i, (quarter, (year, quarter_num)) in enumerate(zip(quarters, quarter_info), 1):
-    print(f"\n{'='*70}")
-    print(f"QUARTER {i}: Q{quarter_num} {year}")
-    print(f"{'='*70}")
+    print(f"\nQ{quarter_num} {year}:")
 
     # Prepare train/test split
     X_train, X_test, y_train, y_test, test_index, actual_test_days = prepare_train_test_split(
         quarter, test_days=TEST_DAYS, min_coverage=MIN_DATA_COVERAGE
     )
 
-    print(f"Train size: {len(X_train)} rows")
-    print(f"Test size: {len(X_test)} rows ({actual_test_days} days)")
-    print(f"Number of features: {X_train.shape[1]}")
-    print(f"Train period: {X_train.index.min()} to {X_train.index.max()}")
-    print(f"Test period: {test_index.min()} to {test_index.max()}")
+    print(f"  Train: {len(X_train)} rows ({X_train.index.min()} to {X_train.index.max()})")
+    print(f"  Test: {len(X_test)} rows, {actual_test_days} days ({test_index.min()} to {test_index.max()})")
+    print(f"  Features: {X_train.shape[1]}")
 
-    # ----------------------------------------------------------------
-    # 1. BASELINE MODEL (Persistence)
-    # ----------------------------------------------------------------
-    print(f"\n[Q{quarter_num} {year}] Training Baseline (Persistence) Model...")
+    # Collect data for combined model
+    all_X_train.append(X_train)
+    all_y_train.append(y_train)
+    all_X_test.append(X_test)
+    all_y_test.append(y_test)
+    all_test_indices.append(test_index)
 
-    y_pred_baseline = np.zeros(len(y_test))
-    y_pred_baseline[0] = y_train.iloc[-1]
-
-    for j in range(1, len(y_test)):
-        y_pred_baseline[j] = y_test.iloc[j-1]
-
-    rmse_baseline = np.sqrt(mean_squared_error(y_test, y_pred_baseline))
-    mae_baseline = mean_absolute_error(y_test, y_pred_baseline)
-    r2_baseline = r2_score(y_test, y_pred_baseline)
-
-    print(f"  RMSE: {rmse_baseline:.4f}, MAE: {mae_baseline:.4f}, R²: {r2_baseline:.4f}")
-
-    # ----------------------------------------------------------------
-    # 2. DIRECT XGBOOST MODEL
-    # ----------------------------------------------------------------
-    print(f"\n[Q{quarter_num} {year}] Training Direct XGBoost Model...")
-
-    direct_model = XGBRegressor(
-        n_estimators=100,
-        max_depth=6,
-        learning_rate=0.1,
-        subsample=0.8,
-        colsample_bytree=0.8,
-        random_state=RANDOM_SEED,
-        n_jobs=-1,
-        objective='reg:squarederror'
-    )
-
-    direct_model.fit(X_train, y_train)
-    y_pred_direct = direct_model.predict(X_test)
-
-    rmse_direct = np.sqrt(mean_squared_error(y_test, y_pred_direct))
-    mae_direct = mean_absolute_error(y_test, y_pred_direct)
-    r2_direct = r2_score(y_test, y_pred_direct)
-
-    print(f"  RMSE: {rmse_direct:.4f}, MAE: {mae_direct:.4f}, R²: {r2_direct:.4f}")
-
-    # ----------------------------------------------------------------
-    # 3. OPENSTEF XGBOOST MODEL
-    # ----------------------------------------------------------------
-    print(f"\n[Q{quarter_num} {year}] Training OpenSTEF XGBoost Model...")
-
-    # Create prediction job configuration
-    pj_dict = dict(
-        id=i,
-        model="xgb",
-        quantiles=[0.5],
-        forecast_type="demand",
-        lat=52.0,
-        lon=5.0,
-        horizon_minutes=15,
-        resolution_minutes=15,
-        name=f"Q{quarter_num}_{year}",
-        hyper_params={},
-        feature_names=None,
-        default_modelspecs=None,
-    )
-    pj = PredictionJobDataClass(**pj_dict)
-
-    # Prepare data in OpenSTEF format
-    train_data_full = quarter[quarter.index.isin(X_train.index)].copy()
-    horizon_value = pj['horizon_minutes'] / 60
-    train_data_full['horizon'] = horizon_value
-
-    # Reorder columns: load first, features, horizon last
-    cols_ordered = ['load'] + [col for col in train_data_full.columns if col not in ['load', 'horizon']] + ['horizon']
-    train_data_openstef = train_data_full[cols_ordered].copy()
-
-    # Split into train/validation using OpenSTEF's method
-    train_split, validation_split, _, _ = split_data_train_validation_test(
-        train_data_openstef,
-        test_fraction=0.0,
-        back_test=False,
-    )
-
-    # Create and train OpenSTEF model
-    openstef_model = ModelCreator.create_model(
-        pj["model"],
-        quantiles=pj["quantiles"],
-    )
-
-    train_x = train_split.iloc[:, 1:-1]
-    train_y = train_split.iloc[:, 0]
-    validation_x = validation_split.iloc[:, 1:-1]
-    validation_y = validation_split.iloc[:, 0]
-
-    eval_set = [(train_x, train_y), (validation_x, validation_y)]
-    openstef_model.set_params(early_stopping_rounds=10, random_state=RANDOM_SEED)
-
-    openstef_model.fit(train_x, train_y, eval_set=eval_set)
-
-    # Make predictions
-    y_pred_openstef = openstef_model.predict(X_test)
-
-    rmse_openstef = np.sqrt(mean_squared_error(y_test, y_pred_openstef))
-    mae_openstef = mean_absolute_error(y_test, y_pred_openstef)
-    r2_openstef = r2_score(y_test, y_pred_openstef)
-
-    print(f"  RMSE: {rmse_openstef:.4f}, MAE: {mae_openstef:.4f}, R²: {r2_openstef:.4f}")
-
-    # ----------------------------------------------------------------
-    # Store results for this quarter
-    # ----------------------------------------------------------------
-    quarter_result = {
+    quarter_split_info.append({
         'quarter_num': quarter_num,
         'year': year,
         'quarter_label': f"Q{quarter_num} {year}",
@@ -352,60 +256,222 @@ for i, (quarter, (year, quarter_num)) in enumerate(zip(quarters, quarter_info), 
         'train_end': str(X_train.index.max()),
         'test_start': str(test_index.min()),
         'test_end': str(test_index.max()),
-        'metrics': {
-            'baseline': {
-                'rmse': float(rmse_baseline),
-                'mae': float(mae_baseline),
-                'r2': float(r2_baseline)
-            },
-            'direct_xgb': {
-                'rmse': float(rmse_direct),
-                'mae': float(mae_direct),
-                'r2': float(r2_direct)
-            },
-            'openstef_xgb': {
-                'rmse': float(rmse_openstef),
-                'mae': float(mae_openstef),
-                'r2': float(r2_openstef)
-            }
+    })
+
+# %%
+# Train models on ALL quarterly data combined
+print(f"\n{'='*70}")
+print("TRAINING MODELS ON ALL QUARTERS COMBINED")
+print(f"{'='*70}")
+print(f"Strategy: Train on data from all {len(quarters)} quarters, test on each quarter's test period")
+
+# Combine all training and test data
+X_train_combined = pd.concat(all_X_train, axis=0)
+y_train_combined = pd.concat(all_y_train, axis=0)
+X_test_combined = pd.concat(all_X_test, axis=0)
+y_test_combined = pd.concat(all_y_test, axis=0)
+test_index_combined = pd.concat([pd.Series(idx) for idx in all_test_indices]).sort_values()
+
+print(f"Combined train size: {len(X_train_combined)} rows (across {len(quarters)} quarters)")
+print(f"Combined test size: {len(X_test_combined)} rows")
+print(f"Train period: {X_train_combined.index.min()} to {X_train_combined.index.max()}")
+print(f"Test period: {test_index_combined.min()} to {test_index_combined.max()}")
+
+# ----------------------------------------------------------------
+# 1. BASELINE MODEL (Persistence) - Combined
+# ----------------------------------------------------------------
+print(f"\n[COMBINED] Training Baseline (Persistence) Model...")
+
+y_pred_baseline_combined = np.zeros(len(y_test_combined))
+# For combined model, we need to handle boundaries between quarters
+# Use simple approach: predict using previous actual value
+for i in range(len(y_test_combined)):
+    if i == 0:
+        # First prediction uses last training value
+        y_pred_baseline_combined[i] = y_train_combined.iloc[-1]
+    else:
+        # Use previous test value
+        y_pred_baseline_combined[i] = y_test_combined.iloc[i-1]
+
+rmse_baseline_combined = np.sqrt(mean_squared_error(y_test_combined, y_pred_baseline_combined))
+mae_baseline_combined = mean_absolute_error(y_test_combined, y_pred_baseline_combined)
+r2_baseline_combined = r2_score(y_test_combined, y_pred_baseline_combined)
+
+print(f"  RMSE: {rmse_baseline_combined:.4f}, MAE: {mae_baseline_combined:.4f}, R²: {r2_baseline_combined:.4f}")
+
+# ----------------------------------------------------------------
+# 2. DIRECT XGBOOST MODEL - Combined
+# ----------------------------------------------------------------
+print(f"\n[COMBINED] Training Direct XGBoost Model...")
+
+direct_model_combined = XGBRegressor(
+    n_estimators=100,
+    max_depth=6,
+    learning_rate=0.1,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    random_state=RANDOM_SEED,
+    n_jobs=-1,
+    objective='reg:squarederror'
+)
+
+direct_model_combined.fit(X_train_combined, y_train_combined)
+y_pred_direct_combined = direct_model_combined.predict(X_test_combined)
+
+rmse_direct_combined = np.sqrt(mean_squared_error(y_test_combined, y_pred_direct_combined))
+mae_direct_combined = mean_absolute_error(y_test_combined, y_pred_direct_combined)
+r2_direct_combined = r2_score(y_test_combined, y_pred_direct_combined)
+
+print(f"  RMSE: {rmse_direct_combined:.4f}, MAE: {mae_direct_combined:.4f}, R²: {r2_direct_combined:.4f}")
+
+# ----------------------------------------------------------------
+# 3. OPENSTEF XGBOOST MODEL - Combined
+# ----------------------------------------------------------------
+print(f"\n[COMBINED] Training OpenSTEF XGBoost Model...")
+
+# Create prediction job configuration
+pj_dict_combined = dict(
+    id=999,
+    model="xgb",
+    quantiles=[0.5],
+    forecast_type="demand",
+    lat=52.0,
+    lon=5.0,
+    horizon_minutes=15,
+    resolution_minutes=15,
+    name="combined_all_quarters",
+    hyper_params={},
+    feature_names=None,
+    default_modelspecs=None,
+)
+pj_combined = PredictionJobDataClass(**pj_dict_combined)
+
+# Prepare combined training data in OpenSTEF format
+train_data_full_combined = pd.concat([
+    quarter[quarter.index.isin(X_train.index)].copy()
+    for quarter, X_train in zip(quarters, all_X_train)
+], axis=0)
+horizon_value = pj_combined['horizon_minutes'] / 60
+train_data_full_combined['horizon'] = horizon_value
+
+# Reorder columns: load first, features, horizon last
+cols_ordered = ['load'] + [col for col in train_data_full_combined.columns if col not in ['load', 'horizon']] + ['horizon']
+train_data_openstef_combined = train_data_full_combined[cols_ordered].copy()
+
+# Split into train/validation using OpenSTEF's method
+train_split_combined, validation_split_combined, _, _ = split_data_train_validation_test(
+    train_data_openstef_combined,
+    test_fraction=0.0,
+    back_test=False,
+)
+
+# Create and train OpenSTEF model
+openstef_model_combined = ModelCreator.create_model(
+    pj_combined["model"],
+    quantiles=pj_combined["quantiles"],
+)
+
+train_x_combined = train_split_combined.iloc[:, 1:-1]
+train_y_combined = train_split_combined.iloc[:, 0]
+validation_x_combined = validation_split_combined.iloc[:, 1:-1]
+validation_y_combined = validation_split_combined.iloc[:, 0]
+
+eval_set_combined = [(train_x_combined, train_y_combined), (validation_x_combined, validation_y_combined)]
+openstef_model_combined.set_params(early_stopping_rounds=10, random_state=RANDOM_SEED)
+
+openstef_model_combined.fit(train_x_combined, train_y_combined, eval_set=eval_set_combined)
+
+# Make predictions
+y_pred_openstef_combined = openstef_model_combined.predict(X_test_combined)
+
+rmse_openstef_combined = np.sqrt(mean_squared_error(y_test_combined, y_pred_openstef_combined))
+mae_openstef_combined = mean_absolute_error(y_test_combined, y_pred_openstef_combined)
+r2_openstef_combined = r2_score(y_test_combined, y_pred_openstef_combined)
+
+print(f"  RMSE: {rmse_openstef_combined:.4f}, MAE: {mae_openstef_combined:.4f}, R²: {r2_openstef_combined:.4f}")
+
+# %%
+# Evaluate combined models on each quarter's test data separately
+print(f"\n{'='*70}")
+print("EVALUATING ON INDIVIDUAL QUARTERLY TEST SETS")
+print(f"{'='*70}")
+
+per_quarter_results = []
+
+for i, (X_test_q, y_test_q, test_idx_q, qinfo) in enumerate(zip(all_X_test, all_y_test, all_test_indices, quarter_split_info)):
+    print(f"\n{qinfo['quarter_label']}:")
+
+    # Baseline predictions for this quarter
+    y_pred_baseline_q = np.zeros(len(y_test_q))
+    # Find the last training value before this quarter's test period
+    train_before_q = y_train_combined[y_train_combined.index < test_idx_q.min()]
+    if len(train_before_q) > 0:
+        y_pred_baseline_q[0] = train_before_q.iloc[-1]
+    else:
+        y_pred_baseline_q[0] = y_train_combined.iloc[-1]
+
+    for j in range(1, len(y_test_q)):
+        y_pred_baseline_q[j] = y_test_q.iloc[j-1]
+
+    # XGBoost predictions for this quarter
+    y_pred_direct_q = direct_model_combined.predict(X_test_q)
+    y_pred_openstef_q = openstef_model_combined.predict(X_test_q)
+
+    # Calculate metrics for this quarter
+    metrics_q = {
+        'baseline': {
+            'rmse': float(np.sqrt(mean_squared_error(y_test_q, y_pred_baseline_q))),
+            'mae': float(mean_absolute_error(y_test_q, y_pred_baseline_q)),
+            'r2': float(r2_score(y_test_q, y_pred_baseline_q))
+        },
+        'direct_xgb': {
+            'rmse': float(np.sqrt(mean_squared_error(y_test_q, y_pred_direct_q))),
+            'mae': float(mean_absolute_error(y_test_q, y_pred_direct_q)),
+            'r2': float(r2_score(y_test_q, y_pred_direct_q))
+        },
+        'openstef_xgb': {
+            'rmse': float(np.sqrt(mean_squared_error(y_test_q, y_pred_openstef_q))),
+            'mae': float(mean_absolute_error(y_test_q, y_pred_openstef_q)),
+            'r2': float(r2_score(y_test_q, y_pred_openstef_q))
         }
     }
 
-    results.append(quarter_result)
+    print(f"  Baseline    - RMSE: {metrics_q['baseline']['rmse']:.4f}, MAE: {metrics_q['baseline']['mae']:.4f}, R²: {metrics_q['baseline']['r2']:.4f}")
+    print(f"  Direct XGB  - RMSE: {metrics_q['direct_xgb']['rmse']:.4f}, MAE: {metrics_q['direct_xgb']['mae']:.4f}, R²: {metrics_q['direct_xgb']['r2']:.4f}")
+    print(f"  OpenSTEF XGB- RMSE: {metrics_q['openstef_xgb']['rmse']:.4f}, MAE: {metrics_q['openstef_xgb']['mae']:.4f}, R²: {metrics_q['openstef_xgb']['r2']:.4f}")
 
-# %%
-# Calculate aggregated metrics
-print("\n" + "="*70)
-print("CALCULATING AGGREGATED METRICS")
-print("="*70)
+    per_quarter_results.append({
+        **qinfo,
+        'metrics': metrics_q
+    })
 
-def aggregate_metrics(results):
-    """Calculate mean and std for each model across quarters."""
-    models = ['baseline', 'direct_xgb', 'openstef_xgb']
-    metrics = ['rmse', 'mae', 'r2']
-
-    aggregated = {}
-
-    for model in models:
-        aggregated[model] = {}
-        for metric in metrics:
-            values = [r['metrics'][model][metric] for r in results]
-            aggregated[model][f'{metric}_mean'] = float(np.mean(values))
-            aggregated[model][f'{metric}_std'] = float(np.std(values))
-
-    return aggregated
-
-aggregated_metrics = aggregate_metrics(results)
-
-# Print aggregated results
-print("\nAggregated Metrics (Mean ± Std):")
-print("-"*70)
-for model in ['baseline', 'direct_xgb', 'openstef_xgb']:
-    print(f"\n{model.upper()}:")
-    for metric in ['rmse', 'mae', 'r2']:
-        mean_val = aggregated_metrics[model][f'{metric}_mean']
-        std_val = aggregated_metrics[model][f'{metric}_std']
-        print(f"  {metric.upper()}: {mean_val:.4f} ± {std_val:.4f}")
+# Store overall combined results
+combined_result = {
+    'train_size': len(X_train_combined),
+    'test_size': len(X_test_combined),
+    'train_start': str(X_train_combined.index.min()),
+    'train_end': str(X_train_combined.index.max()),
+    'test_start': str(test_index_combined.min()),
+    'test_end': str(test_index_combined.max()),
+    'overall_metrics': {
+        'baseline': {
+            'rmse': float(rmse_baseline_combined),
+            'mae': float(mae_baseline_combined),
+            'r2': float(r2_baseline_combined)
+        },
+        'direct_xgb': {
+            'rmse': float(rmse_direct_combined),
+            'mae': float(mae_direct_combined),
+            'r2': float(r2_direct_combined)
+        },
+        'openstef_xgb': {
+            'rmse': float(rmse_openstef_combined),
+            'mae': float(mae_openstef_combined),
+            'r2': float(r2_openstef_combined)
+        }
+    },
+    'per_quarter_metrics': {f"q{r['quarter_num']}_{r['year']}": r for r in per_quarter_results}
+}
 
 # %%
 # Save results to JSON
@@ -416,6 +482,7 @@ print("="*70)
 output_data = {
     'experiment': EXPERIMENT_NAME,
     'timestamp': datetime.now().isoformat(),
+    'description': 'Combined model trained on all quarters, evaluated on each quarter separately',
     'config': {
         'test_days': TEST_DAYS,
         'min_data_coverage': MIN_DATA_COVERAGE,
@@ -433,8 +500,7 @@ output_data = {
             'early_stopping_rounds': 10
         }
     },
-    'by_quarter': {f"q{r['quarter_num']}_{r['year']}": r for r in results},
-    'aggregated': aggregated_metrics
+    'results': combined_result
 }
 
 output_file = experiment_dir / 'training_results.json'
@@ -446,21 +512,32 @@ print(f"Results saved to: {output_file}")
 # %%
 # Print summary table
 print("\n" + "="*70)
-print("SUMMARY TABLE")
+print("SUMMARY: OVERALL PERFORMANCE")
 print("="*70)
-print(f"\n{'Quarter':<15} {'Model':<15} {'RMSE':<12} {'MAE':<12} {'R²':<12}")
-print("-"*70)
+print(f"\nCombined model trained on all {len(quarters)} quarters, tested on all test data:")
+print(f"{'Model':<18} {'RMSE':<12} {'MAE':<12} {'R²':<12}")
+print("-"*60)
+for model in ['baseline', 'direct_xgb', 'openstef_xgb']:
+    m = combined_result['overall_metrics'][model]
+    print(f"{model:<18} {m['rmse']:<12.4f} {m['mae']:<12.4f} {m['r2']:<12.4f}")
 
-for res in results:
+print("\n" + "="*70)
+print("SUMMARY: PER-QUARTER PERFORMANCE")
+print("="*70)
+print(f"\n{'Quarter':<15} {'Model':<18} {'RMSE':<12} {'MAE':<12} {'R²':<12}")
+print("-"*75)
+
+for res in per_quarter_results:
     qlabel = res['quarter_label']
     for model in ['baseline', 'direct_xgb', 'openstef_xgb']:
         m = res['metrics'][model]
-        print(f"{qlabel:<15} {model:<15} {m['rmse']:<12.4f} {m['mae']:<12.4f} {m['r2']:<12.4f}")
-    print("-"*70)
+        print(f"{qlabel:<15} {model:<18} {m['rmse']:<12.4f} {m['mae']:<12.4f} {m['r2']:<12.4f}")
+    print("-"*75)
 
 print("\n" + "="*70)
 print("TRAINING COMPLETE")
 print("="*70)
-print(f"\nTrained models for {len(results)} quarters")
+print(f"\nTrained 1 combined model on all {len(quarters)} quarters")
+print(f"Evaluated on overall test set + {len(per_quarter_results)} individual quarterly test sets")
 print(f"Results saved to: {output_file}")
 print("\nNext step: Run the evaluation report to generate visualizations")
