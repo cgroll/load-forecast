@@ -592,3 +592,66 @@ stages:
       md5: d92800504cc0164b849bbb35e520081d.dir
       size: 932393
       nfiles: 7
+  train_04_jan_nov_dec:
+    cmd: uv run python jobs/04_train_models_jan_nov_dec.py
+    deps:
+    - path: data/processed/data_with_features.csv
+      hash: md5
+      md5: b86e6b4095af267bd51242683e55c1ff
+      size: 56426133
+    - path: jobs/04_train_models_jan_nov_dec.py
+      hash: md5
+      md5: 27fb774b8c4be6407f01e8d3e2391dbb
+      size: 20570
+    outs:
+    - path: metrics/jan_nov_dec_evaluation.json
+      hash: md5
+      md5: c3fbb289fcb9bfa415ad36c46a0f5e94
+      size: 432
+    - path: models/jan_nov_dec
+      hash: md5
+      md5: 515b8214933d3d3a74b5d73d24787226.dir
+      size: 1043
+      nfiles: 1
+  train_05_quarterly:
+    cmd: uv run python jobs/05_train_models_quarterly.py
+    deps:
+    - path: data/processed/data_with_features.csv
+      hash: md5
+      md5: b86e6b4095af267bd51242683e55c1ff
+      size: 56426133
+    - path: jobs/05_train_models_quarterly.py
+      hash: md5
+      md5: cc083c628f39a2de29d82ddb3ae81f39
+      size: 28275
+    outs:
+    - path: metrics/quarterly_split_evaluation.json
+      hash: md5
+      md5: 9b7f6c8f5bc7b73357c20ff143ddb327
+      size: 2202
+    - path: models/quarterly_split
+      hash: md5
+      md5: 727f66c313a2f130d2e6d966eaa49fef.dir
+      size: 4600
+      nfiles: 1
+  train_06_multi_horizon_quarterly:
+    cmd: uv run python jobs/06_multi_horizon_quarterly.py
+    deps:
+    - path: data/processed/data_with_features.csv
+      hash: md5
+      md5: b86e6b4095af267bd51242683e55c1ff
+      size: 56426133
+    - path: jobs/06_multi_horizon_quarterly.py
+      hash: md5
+      md5: db88eaed418dc61c2b206c51ef6d9988
+      size: 38365
+    outs:
+    - path: metrics/multi_horizon_quarterly_evaluation.json
+      hash: md5
+      md5: 9dbf2a45822cd297fa5ad60b3769c474
+      size: 6498
+    - path: models/multi_horizon_quarterly
+      hash: md5
+      md5: 4cf2a5f3dd27267f23efcced1175fd3d.dir
+      size: 64646
+      nfiles: 2

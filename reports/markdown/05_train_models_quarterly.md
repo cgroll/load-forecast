@@ -59,6 +59,8 @@
     MODEL 1: BASELINE (PERSISTENCE)
     ======================================================================
     Strategy: Predict t using load value from t-1
+
+
     Overall metrics: RMSE=0.3912, MAE=0.2092, R²=0.9565
 
 
@@ -80,117 +82,74 @@
     ======================================================================
     Strategy: Use OpenSTEF's training approach with train/validation split
     Training data shape (with horizon): (25843, 134)
-    Train split: 22216 samples
-    Validation split: 3627 samples
+    Train split: 21940 samples
+    Validation split: 3903 samples
 
 
-    [0]	validation_0-rmse:1.36398	validation_1-rmse:1.41540
+    [0]	validation_0-rmse:1.36986	validation_1-rmse:1.39097
 
 
-    [1]	validation_0-rmse:0.99574	validation_1-rmse:1.04522
+    [1]	validation_0-rmse:0.99993	validation_1-rmse:1.03326
 
 
-    [2]	validation_0-rmse:0.74825	validation_1-rmse:0.80224
+    [2]	validation_0-rmse:0.75097	validation_1-rmse:0.79917
 
 
-    [3]	validation_0-rmse:0.58667	validation_1-rmse:0.64800
+    [3]	validation_0-rmse:0.58789	validation_1-rmse:0.64542
 
 
-    [4]	validation_0-rmse:0.48396	validation_1-rmse:0.55374
+    [4]	validation_0-rmse:0.48479	validation_1-rmse:0.55652
 
 
-    [5]	validation_0-rmse:0.42118	validation_1-rmse:0.49960
+    [5]	validation_0-rmse:0.42092	validation_1-rmse:0.50472
 
 
-    [6]	validation_0-rmse:0.38340	validation_1-rmse:0.46912
+    [6]	validation_0-rmse:0.38235	validation_1-rmse:0.47824
 
 
-    [7]	validation_0-rmse:0.36048	validation_1-rmse:0.45567
+    [7]	validation_0-rmse:0.35936	validation_1-rmse:0.46297
 
 
-    [8]	validation_0-rmse:0.34598	validation_1-rmse:0.44888
+    [8]	validation_0-rmse:0.34416	validation_1-rmse:0.45441
 
 
-    [9]	validation_0-rmse:0.33638	validation_1-rmse:0.44659
+    [9]	validation_0-rmse:0.33311	validation_1-rmse:0.45239
 
 
-    [10]	validation_0-rmse:0.32889	validation_1-rmse:0.44523
+    [10]	validation_0-rmse:0.32549	validation_1-rmse:0.45204
 
 
-    [11]	validation_0-rmse:0.32346	validation_1-rmse:0.44432
+    [11]	validation_0-rmse:0.31965	validation_1-rmse:0.45265
 
 
-    [12]	validation_0-rmse:0.31861	validation_1-rmse:0.44324
+    [12]	validation_0-rmse:0.31359	validation_1-rmse:0.45308
 
 
-    [13]	validation_0-rmse:0.31349	validation_1-rmse:0.44295
+    [13]	validation_0-rmse:0.30877	validation_1-rmse:0.45265
 
 
-    [14]	validation_0-rmse:0.30842	validation_1-rmse:0.44340
+    [14]	validation_0-rmse:0.30470	validation_1-rmse:0.45469
 
 
-    [15]	validation_0-rmse:0.30286	validation_1-rmse:0.44327
+    [15]	validation_0-rmse:0.30011	validation_1-rmse:0.45418
 
 
-    [16]	validation_0-rmse:0.29920	validation_1-rmse:0.44334
+    [16]	validation_0-rmse:0.29593	validation_1-rmse:0.45406
 
 
-    [17]	validation_0-rmse:0.29607	validation_1-rmse:0.44274
+    [17]	validation_0-rmse:0.29326	validation_1-rmse:0.45664
 
 
-    [18]	validation_0-rmse:0.29239	validation_1-rmse:0.44329
+    [18]	validation_0-rmse:0.29127	validation_1-rmse:0.45702
 
 
-    [19]	validation_0-rmse:0.29008	validation_1-rmse:0.44339
+    [19]	validation_0-rmse:0.28934	validation_1-rmse:0.45684
 
 
-    [20]	validation_0-rmse:0.28591	validation_1-rmse:0.44277
+    [20]	validation_0-rmse:0.28368	validation_1-rmse:0.45659
 
 
-    [21]	validation_0-rmse:0.28339	validation_1-rmse:0.44358
-
-
-    [22]	validation_0-rmse:0.28057	validation_1-rmse:0.44337
-
-
-    [23]	validation_0-rmse:0.27755	validation_1-rmse:0.44265
-
-    
-
-
-    [24]	validation_0-rmse:0.27393	validation_1-rmse:0.44524
-
-
-    [25]	validation_0-rmse:0.26980	validation_1-rmse:0.44498
-
-
-    [26]	validation_0-rmse:0.26641	validation_1-rmse:0.44544
-
-    
-
-
-    [27]	validation_0-rmse:0.26358	validation_1-rmse:0.44593
-
-
-    [28]	validation_0-rmse:0.26072	validation_1-rmse:0.44599
-
-
-    [29]	validation_0-rmse:0.25859	validation_1-rmse:0.44653
-
-
-    [30]	validation_0-rmse:0.25786	validation_1-rmse:0.44641
-
-
-    [31]	validation_0-rmse:0.25526	validation_1-rmse:0.44648
-
-
-    [32]	validation_0-rmse:0.25282	validation_1-rmse:0.44653
-
-
-    [33]	validation_0-rmse:0.25183	validation_1-rmse:0.44589
-
-
-    Overall metrics: RMSE=0.3879, MAE=0.2040, R²=0.9572
+    Overall metrics: RMSE=0.3893, MAE=0.2040, R²=0.9569
 
 
     
@@ -201,22 +160,22 @@
     Q1 2023 (1453 predictions):
       Baseline    - RMSE: 0.4788, MAE: 0.2460, R²: 0.9219
       Direct XGB  - RMSE: 0.4432, MAE: 0.2243, R²: 0.9331
-      OpenSTEF XGB- RMSE: 0.4602, MAE: 0.2328, R²: 0.9279
+      OpenSTEF XGB- RMSE: 0.4798, MAE: 0.2404, R²: 0.9216
     
     Q2 2023 (1344 predictions):
       Baseline    - RMSE: 0.4159, MAE: 0.2504, R²: 0.9682
       Direct XGB  - RMSE: 0.3961, MAE: 0.2284, R²: 0.9712
-      OpenSTEF XGB- RMSE: 0.4215, MAE: 0.2434, R²: 0.9674
+      OpenSTEF XGB- RMSE: 0.4142, MAE: 0.2396, R²: 0.9685
     
     Q3 2023 (1344 predictions):
       Baseline    - RMSE: 0.4076, MAE: 0.2256, R²: 0.9069
       Direct XGB  - RMSE: 0.3995, MAE: 0.2145, R²: 0.9106
-      OpenSTEF XGB- RMSE: 0.4042, MAE: 0.2163, R²: 0.9085
+      OpenSTEF XGB- RMSE: 0.3901, MAE: 0.2069, R²: 0.9147
     
     Q4 2023 (1341 predictions):
       Baseline    - RMSE: 0.1928, MAE: 0.1116, R²: 0.9559
       Direct XGB  - RMSE: 0.2106, MAE: 0.1166, R²: 0.9474
-      OpenSTEF XGB- RMSE: 0.2094, MAE: 0.1208, R²: 0.9480
+      OpenSTEF XGB- RMSE: 0.2135, MAE: 0.1261, R²: 0.9459
 
 
     
@@ -236,7 +195,7 @@
     ------------------------------------------------------------
     baseline           0.3912       0.2092       0.9565      
     direct_xgb         0.3748       0.1966       0.9601      
-    openstef_xgb       0.3879       0.2040       0.9572      
+    openstef_xgb       0.3893       0.2040       0.9569      
     
     ======================================================================
     SUMMARY: PER-QUARTER PERFORMANCE
@@ -246,19 +205,19 @@
     ---------------------------------------------------------------------------
     Q1 2023         baseline           0.4788       0.2460       0.9219      
     Q1 2023         direct_xgb         0.4432       0.2243       0.9331      
-    Q1 2023         openstef_xgb       0.4602       0.2328       0.9279      
+    Q1 2023         openstef_xgb       0.4798       0.2404       0.9216      
     ---------------------------------------------------------------------------
     Q2 2023         baseline           0.4159       0.2504       0.9682      
     Q2 2023         direct_xgb         0.3961       0.2284       0.9712      
-    Q2 2023         openstef_xgb       0.4215       0.2434       0.9674      
+    Q2 2023         openstef_xgb       0.4142       0.2396       0.9685      
     ---------------------------------------------------------------------------
     Q3 2023         baseline           0.4076       0.2256       0.9069      
     Q3 2023         direct_xgb         0.3995       0.2145       0.9106      
-    Q3 2023         openstef_xgb       0.4042       0.2163       0.9085      
+    Q3 2023         openstef_xgb       0.3901       0.2069       0.9147      
     ---------------------------------------------------------------------------
     Q4 2023         baseline           0.1928       0.1116       0.9559      
     Q4 2023         direct_xgb         0.2106       0.1166       0.9474      
-    Q4 2023         openstef_xgb       0.2094       0.1208       0.9480      
+    Q4 2023         openstef_xgb       0.2135       0.1261       0.9459      
     ---------------------------------------------------------------------------
 
 
@@ -277,7 +236,7 @@
     ------------------------------------------------------
     baseline           0.3912       0.2092       0.9565      
     direct_xgb         0.3748       0.1966       0.9601      
-    openstef_xgb       0.3879       0.2040       0.9572      
+    openstef_xgb       0.3893       0.2040       0.9569      
 
 
 
@@ -319,19 +278,19 @@
     ---------------------------------------------------------------------------
     Q1 2023         baseline           0.4788       0.2460       0.9219      
     Q1 2023         direct_xgb         0.4432       0.2243       0.9331      
-    Q1 2023         openstef_xgb       0.4602       0.2328       0.9279      
+    Q1 2023         openstef_xgb       0.4798       0.2404       0.9216      
     ---------------------------------------------------------------------------
     Q2 2023         baseline           0.4159       0.2504       0.9682      
     Q2 2023         direct_xgb         0.3961       0.2284       0.9712      
-    Q2 2023         openstef_xgb       0.4215       0.2434       0.9674      
+    Q2 2023         openstef_xgb       0.4142       0.2396       0.9685      
     ---------------------------------------------------------------------------
     Q3 2023         baseline           0.4076       0.2256       0.9069      
     Q3 2023         direct_xgb         0.3995       0.2145       0.9106      
-    Q3 2023         openstef_xgb       0.4042       0.2163       0.9085      
+    Q3 2023         openstef_xgb       0.3901       0.2069       0.9147      
     ---------------------------------------------------------------------------
     Q4 2023         baseline           0.1928       0.1116       0.9559      
     Q4 2023         direct_xgb         0.2106       0.1166       0.9474      
-    Q4 2023         openstef_xgb       0.2094       0.1208       0.9480      
+    Q4 2023         openstef_xgb       0.2135       0.1261       0.9459      
     ---------------------------------------------------------------------------
 
 
@@ -361,5 +320,5 @@
     Overall Results (All Test Data Combined):
       BASELINE: RMSE=0.3912, MAE=0.2092, R²=0.9565
       DIRECT_XGB: RMSE=0.3748, MAE=0.1966, R²=0.9601
-      OPENSTEF_XGB: RMSE=0.3879, MAE=0.2040, R²=0.9572
+      OPENSTEF_XGB: RMSE=0.3893, MAE=0.2040, R²=0.9569
 

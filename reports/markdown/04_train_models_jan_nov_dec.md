@@ -82,81 +82,98 @@
     ======================================================================
 
 
-    [0]	validation_0-rmse:1.41327	validation_1-rmse:1.29659
+    [0]	validation_0-rmse:1.38564	validation_1-rmse:1.47307
 
 
-    [1]	validation_0-rmse:1.03227	validation_1-rmse:0.95400
+    [1]	validation_0-rmse:1.01453	validation_1-rmse:1.07873
 
 
-    [2]	validation_0-rmse:0.77688	validation_1-rmse:0.72794
+    [2]	validation_0-rmse:0.76658	validation_1-rmse:0.81471
 
 
-    [3]	validation_0-rmse:0.61003	validation_1-rmse:0.58532
+    [3]	validation_0-rmse:0.60497	validation_1-rmse:0.64263
 
 
-    [4]	validation_0-rmse:0.50489	validation_1-rmse:0.50042
+    [4]	validation_0-rmse:0.50398	validation_1-rmse:0.53339
 
 
-    [5]	validation_0-rmse:0.44118	validation_1-rmse:0.45094
+    [5]	validation_0-rmse:0.44181	validation_1-rmse:0.47245
 
 
-    [6]	validation_0-rmse:0.40201	validation_1-rmse:0.42486
+    [6]	validation_0-rmse:0.40523	validation_1-rmse:0.43711
 
 
-    [7]	validation_0-rmse:0.37742	validation_1-rmse:0.41215
+    [7]	validation_0-rmse:0.38275	validation_1-rmse:0.41850
 
 
-    [8]	validation_0-rmse:0.36341	validation_1-rmse:0.40660
+    [8]	validation_0-rmse:0.36842	validation_1-rmse:0.41048
 
 
-    [9]	validation_0-rmse:0.35297	validation_1-rmse:0.40336
+    [9]	validation_0-rmse:0.35837	validation_1-rmse:0.40403
 
 
-    [10]	validation_0-rmse:0.34581	validation_1-rmse:0.40224
+    [10]	validation_0-rmse:0.35127	validation_1-rmse:0.40172
 
 
-    [11]	validation_0-rmse:0.33964	validation_1-rmse:0.40088
+    [11]	validation_0-rmse:0.34477	validation_1-rmse:0.40013
 
 
-    [12]	validation_0-rmse:0.33534	validation_1-rmse:0.40149
+    [12]	validation_0-rmse:0.33886	validation_1-rmse:0.39884
 
 
-    [13]	validation_0-rmse:0.33033	validation_1-rmse:0.40278
+    [13]	validation_0-rmse:0.33480	validation_1-rmse:0.39741
 
 
-    [14]	validation_0-rmse:0.32612	validation_1-rmse:0.40285
+    [14]	validation_0-rmse:0.33152	validation_1-rmse:0.39752
 
 
-    [15]	validation_0-rmse:0.32314	validation_1-rmse:0.40274
+    [15]	validation_0-rmse:0.32716	validation_1-rmse:0.39642
 
 
-    [16]	validation_0-rmse:0.32019	validation_1-rmse:0.40318
+    [16]	validation_0-rmse:0.32084	validation_1-rmse:0.39536
 
 
-    [17]	validation_0-rmse:0.31621	validation_1-rmse:0.40354
+    [17]	validation_0-rmse:0.31878	validation_1-rmse:0.39571
 
 
-    [18]	validation_0-rmse:0.31360	validation_1-rmse:0.40363
+    [18]	validation_0-rmse:0.31638	validation_1-rmse:0.39659
 
 
-    [19]	validation_0-rmse:0.31062	validation_1-rmse:0.40354
+    [19]	validation_0-rmse:0.31343	validation_1-rmse:0.39713
 
 
-    [20]	validation_0-rmse:0.30760	validation_1-rmse:0.40374
+    [20]	validation_0-rmse:0.30990	validation_1-rmse:0.39722
 
 
-    [21]	validation_0-rmse:0.30405	validation_1-rmse:0.40580
+    [21]	validation_0-rmse:0.30782	validation_1-rmse:0.39761
 
 
-      RMSE: 0.1926
-      MAE:  0.1128
-      R²:   0.9460
+    [22]	validation_0-rmse:0.30348	validation_1-rmse:0.39666
+
+
+    [23]	validation_0-rmse:0.30014	validation_1-rmse:0.39751
+
+
+    [24]	validation_0-rmse:0.29832	validation_1-rmse:0.39812
+
+
+    [25]	validation_0-rmse:0.29442	validation_1-rmse:0.39795
+
+
+    [26]	validation_0-rmse:0.29220	validation_1-rmse:0.39844
+
+
+      RMSE: 0.2250
+      MAE:  0.1306
+      R²:   0.9263
 
 
     
     ======================================================================
     SAVING TRAINING RESULTS
     ======================================================================
+
+
     Training results saved to: /home/chris/research/load-forecast/models/jan_nov_dec/training_results.json
 
 
@@ -169,7 +186,7 @@
     ------------------------------------------------------------
     Baseline             0.1815       0.1068       0.9520      
     Direct XGBoost       0.1907       0.1097       0.9471      
-    OpenSTEF XGBoost     0.1926       0.1128       0.9460      
+    OpenSTEF XGBoost     0.2250       0.1306       0.9263      
 
 
     
@@ -222,5 +239,5 @@
     Key Findings:
       - Best RMSE: 0.1815 (Baseline Persistence)
       - Direct XGBoost RMSE improvement over baseline: -5.05%
-      - OpenSTEF XGBoost RMSE improvement over baseline: -6.09%
+      - OpenSTEF XGBoost RMSE improvement over baseline: -23.96%
 

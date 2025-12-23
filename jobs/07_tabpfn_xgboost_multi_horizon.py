@@ -321,7 +321,7 @@ for horizon, X_all, y_all, split_type_all in all_horizon_datasets:
     # ----------------------------------------------------------------
     print(f"\n[H{horizon}] Training TabPFN Model...")
 
-    tabpfn_model = TabPFNRegressor(device='cpu', random_state=RANDOM_SEED)
+    tabpfn_model = TabPFNRegressor(device='cuda', random_state=RANDOM_SEED)
 
     print(f"  Fitting TabPFN model (foundation model for tabular data)...")
     tabpfn_model.fit(X_train, y_train)

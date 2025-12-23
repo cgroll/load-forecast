@@ -7,8 +7,6 @@
     Loaded data shape: (35041, 133)
     Date range: 2023-01-01 00:00:00 to 2024-01-01 00:00:00
     Loading original data from: /home/chris/research/load-forecast/data/raw_inputs/input_data_sun_heavy.csv
-
-
     
     Original columns: 44
     Total columns: 133
@@ -19,6 +17,8 @@
     ======================================================================
     MISSING VALUE ANALYSIS - NEW FEATURES ONLY
     ======================================================================
+
+
     
     New features with missing values: 46 out of 89
     Total observations: 35,041

@@ -1,22 +1,7 @@
 stages:
   # ============================================================
-  # DATA PROCESSING & REPORTS
+  # DATA PROCESSING
   # ============================================================
-
-  # 01: EDA Report
-  report_01_eda:
-    cmd: bash tools/generate_report.sh 01_eda jobs/01_eda.py
-    deps:
-      - jobs/01_eda.py
-      - data/raw_inputs/input_data_sun_heavy.csv
-      - tools/generate_report.sh
-    outs:
-      - reports/html/01_eda.html:
-          cache: false
-      - reports/markdown/01_eda.md:
-          cache: false
-      - reports/markdown/01_eda_files:
-          cache: false
 
   # 02: Create Features
   create_features:
@@ -27,79 +12,6 @@ stages:
     outs:
       - data/processed/data_with_features.csv
 
-  # 03: Analyse Features Report
-  report_03_analyse_features:
-    cmd: bash tools/generate_report.sh 03_analyse_features jobs/03_analyse_features.py
-    deps:
-      - jobs/03_analyse_features.py
-      - data/processed/data_with_features.csv
-      - tools/generate_report.sh
-    outs:
-      - reports/html/03_analyse_features.html:
-          cache: false
-      - reports/markdown/03_analyse_features.md:
-          cache: false
-      - reports/markdown/03_analyse_features_files:
-          cache: false
-
-  # ============================================================
-  # MODEL TRAINING & EVALUATION
-  # ============================================================
-
-  # 04: Train and Evaluate Models (Jan-Nov vs Dec)
-  report_04_train_evaluate_jan_nov_dec:
-    cmd: bash tools/generate_report.sh 04_train_models_jan_nov_dec jobs/04_train_models_jan_nov_dec.py
-    deps:
-      - jobs/04_train_models_jan_nov_dec.py
-      - data/processed/data_with_features.csv
-      - tools/generate_report.sh
-    metrics:
-      - metrics/jan_nov_dec_evaluation.json
-    outs:
-      - models/jan_nov_dec
-      - reports/html/04_train_models_jan_nov_dec.html:
-          cache: false
-      - reports/markdown/04_train_models_jan_nov_dec.md:
-          cache: false
-      - reports/markdown/04_train_models_jan_nov_dec_files:
-          cache: false
-
-  # 06: Train and Evaluate Models (Quarterly)
-  report_05_train_evaluate_quarterly:
-    cmd: bash tools/generate_report.sh 05_train_models_quarterly jobs/05_train_models_quarterly.py
-    deps:
-      - jobs/05_train_models_quarterly.py
-      - data/processed/data_with_features.csv
-      - tools/generate_report.sh
-    metrics:
-      - metrics/quarterly_split_evaluation.json
-    outs:
-      - models/quarterly_split
-      - reports/html/05_train_models_quarterly.html:
-          cache: false
-      - reports/markdown/05_train_models_quarterly.md:
-          cache: false
-      - reports/markdown/05_train_models_quarterly_files:
-          cache: false
-
-  # 08: Train and Evaluate Multi-Horizon Models (Quarterly)
-  report_06_train_evaluate_multi_horizon_quarterly:
-    cmd: bash tools/generate_report.sh 06_multi_horizon_quarterly jobs/06_multi_horizon_quarterly.py
-    deps:
-      - jobs/06_multi_horizon_quarterly.py
-      - data/processed/data_with_features.csv
-      - tools/generate_report.sh
-    metrics:
-      - metrics/multi_horizon_quarterly_evaluation.json
-    outs:
-      - models/multi_horizon_quarterly
-      - reports/html/06_multi_horizon_quarterly.html:
-          cache: false
-      - reports/markdown/06_multi_horizon_quarterly.md:
-          cache: false
-      - reports/markdown/06_multi_horizon_quarterly_files:
-          cache: false
-
   # 07: Train TabPFN vs XGBoost Multi-Horizon Models (Quarterly)
   train_07_tabpfn_xgboost_multi_horizon:
     cmd: uv run python jobs/07_tabpfn_xgboost_multi_horizon.py
@@ -107,52 +19,8 @@ stages:
       - jobs/07_tabpfn_xgboost_multi_horizon.py
       - data/processed/data_with_features.csv
     metrics:
-      - metrics/multi_horizon_quarterly_evaluation.json:
+      - metrics/tabpfn_xgboost_evaluation.json:
           cache: false
     outs:
-      - models/multi_horizon_quarterly/training_results.json:
+      - models/tabpfn_xgboost:
           cache: false
-
-  # # 10: Train TabPFN vs XGBoost Multi-Horizon Models (Quarterly)
-  # train_tabpfn_xgboost_quarterly:
-  #   cmd: uv run python jobs/10_tabpfn_xgboost.py
-  #   deps:
-  #     - jobs/10_tabpfn_xgboost.py
-  #     - data/processed/data_with_features.csv
-  #   outs:
-  #     - models/tabpfn_xgboost_quarterly
-
-  # # 11: Evaluate TabPFN vs XGBoost Multi-Horizon Models (Quarterly)
-  # report_11_evaluation_tabpfn_xgboost:
-  #   cmd: bash tools/generate_report.sh 11_evaluation_tabpfn_xgboost reports_src/11_evaluation_tabpfn_xgboost.py
-  #   deps:
-  #     - reports_src/11_evaluation_tabpfn_xgboost.py
-  #     - models/tabpfn_xgboost_quarterly/training_results.json
-  #     - tools/generate_report.sh
-  #   metrics:
-  #     - metrics/tabpfn_xgboost_quarterly_evaluation.json
-  #   outs:
-  #     - reports/html/11_evaluation_tabpfn_xgboost.html:
-  #         cache: false
-  #     - reports/markdown/11_evaluation_tabpfn_xgboost.md:
-  #         cache: false
-  #     - reports/markdown/11_evaluation_tabpfn_xgboost_files:
-  #         cache: false
-
-  # # 12: Feature Importance Analysis Across Horizons
-  # report_12_feature_importance:
-  #   cmd: bash tools/generate_report.sh 12_feature_importance reports_src/12_feature_importance.py
-  #   deps:
-  #     - reports_src/12_feature_importance.py
-  #     - data/processed/data_with_features.csv
-  #     - tools/generate_report.sh
-  #   metrics:
-  #     - metrics/feature_importance_analysis.json
-  #   outs:
-  #     - models/feature_importance_analysis
-  #     - reports/html/12_feature_importance.html:
-  #         cache: false
-  #     - reports/markdown/12_feature_importance.md:
-  #         cache: false
-  #     - reports/markdown/12_feature_importance_files:
-  #         cache: false
