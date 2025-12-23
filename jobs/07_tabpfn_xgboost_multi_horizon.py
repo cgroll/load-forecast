@@ -44,13 +44,14 @@ EXPERIMENT_NAME = "multi_horizon_quarterly"
 TEST_DAYS = 14
 MIN_DATA_COVERAGE = 0.95  # 95% non-missing values per day
 NUM_HORIZONS = 8  # Forecast 1-8 periods ahead (15min to 2h)
+SELECTED_HORIZONS = [1, 4, 8]  # Only train models for these specific horizons
 TARGET_COL = 'load'
 
 print("="*70)
 print("MULTI-HORIZON QUARTERLY MODEL TRAINING AND EVALUATION")
 print("="*70)
 print(f"Experiment: {EXPERIMENT_NAME}")
-print(f"Forecast horizons: {NUM_HORIZONS} periods (15 min to {NUM_HORIZONS * 15} min)")
+print(f"Forecast horizons: {SELECTED_HORIZONS} (15 min to {max(SELECTED_HORIZONS) * 15} min)")
 print(f"Test period: Last {TEST_DAYS} days per quarter")
 print(f"Minimum data coverage: {MIN_DATA_COVERAGE*100}%")
 print(f"Random seed: {RANDOM_SEED}")
@@ -271,10 +272,13 @@ def create_multi_horizon_datasets(df: pd.DataFrame, split_type_series: pd.Series
 
     return datasets
 
-print(f"Creating {NUM_HORIZONS} multi-horizon datasets...")
-all_horizon_datasets = create_multi_horizon_datasets(
+print(f"Creating multi-horizon datasets for horizons: {SELECTED_HORIZONS}...")
+all_horizon_datasets_full = create_multi_horizon_datasets(
     all_data, split_type, known_ahead_features, forecast_features, TARGET_COL, NUM_HORIZONS
 )
+
+# Filter to only selected horizons
+all_horizon_datasets = [ds for ds in all_horizon_datasets_full if ds[0] in SELECTED_HORIZONS]
 
 print("\nDataset sizes by horizon:")
 for horizon, X, y, split_type in all_horizon_datasets:
@@ -441,10 +445,12 @@ for qinfo in quarter_info:
 
     # Print summary for this quarter (show first and last horizon)
     if len(quarter_horizon_results) > 0:
-        print(f"  Horizon 1 (15min) - TabPFN RMSE: {quarter_horizon_results[0]['metrics']['tabpfn']['rmse']:.4f}, "
-              f"Direct XGB RMSE: {quarter_horizon_results[0]['metrics']['direct_xgb']['rmse']:.4f}")
-        print(f"  Horizon {NUM_HORIZONS} ({NUM_HORIZONS*15}min) - TabPFN RMSE: {quarter_horizon_results[-1]['metrics']['tabpfn']['rmse']:.4f}, "
-              f"Direct XGB RMSE: {quarter_horizon_results[-1]['metrics']['direct_xgb']['rmse']:.4f}")
+        h_first = quarter_horizon_results[0]
+        h_last = quarter_horizon_results[-1]
+        print(f"  Horizon {h_first['horizon']} ({h_first['horizon_minutes']}min) - TabPFN RMSE: {h_first['metrics']['tabpfn']['rmse']:.4f}, "
+              f"Direct XGB RMSE: {h_first['metrics']['direct_xgb']['rmse']:.4f}")
+        print(f"  Horizon {h_last['horizon']} ({h_last['horizon_minutes']}min) - TabPFN RMSE: {h_last['metrics']['tabpfn']['rmse']:.4f}, "
+              f"Direct XGB RMSE: {h_last['metrics']['direct_xgb']['rmse']:.4f}")
 
     per_quarter_per_horizon_results.append({
         **qinfo,
@@ -460,9 +466,10 @@ print("="*70)
 output_data = {
     'experiment': EXPERIMENT_NAME,
     'timestamp': datetime.now().isoformat(),
-    'description': 'Multi-horizon models (1-8 periods ahead) comparing TabPFN and Direct XGBoost. Trained on all quarters combined, evaluated per quarter. For horizon h: uses time-based features at t+h and forecast features from t (which are already 1-period forecasts in the dataset), shifted back by h-1 periods.',
+    'description': f'Multi-horizon models (horizons {SELECTED_HORIZONS}) comparing TabPFN and Direct XGBoost. Trained on all quarters combined, evaluated per quarter. For horizon h: uses time-based features at t+h and forecast features from t (which are already 1-period forecasts in the dataset), shifted back by h-1 periods.',
     'config': {
         'num_horizons': NUM_HORIZONS,
+        'selected_horizons': SELECTED_HORIZONS,
         'test_days': TEST_DAYS,
         'min_data_coverage': MIN_DATA_COVERAGE,
         'random_seed': RANDOM_SEED,
@@ -531,7 +538,7 @@ print("="*70)
 models = ['tabpfn', 'direct_xgb']
 model_labels = ['TabPFN', 'Direct XGB']
 
-print("\nDegradation Summary (Horizon 1 → Horizon 8):")
+print(f"\nDegradation Summary (Horizon {SELECTED_HORIZONS[0]} → Horizon {SELECTED_HORIZONS[-1]}):")
 print("-"*70)
 for model, label in zip(models, model_labels):
     rmse_vals = [h['metrics'][model]['rmse'] for h in horizon_results]
@@ -593,8 +600,8 @@ for q_result in per_quarter_per_horizon_results:
     q_key = f"q{q_result['quarter_num']}_{q_result['year']}"
     metrics_output['per_quarter_summary'][q_key] = {
         'quarter_label': q_result['quarter_label'],
-        'h1_metrics': q_result['horizon_results'][0]['metrics'],
-        'h8_metrics': q_result['horizon_results'][-1]['metrics']
+        f'h{SELECTED_HORIZONS[0]}_metrics': q_result['horizon_results'][0]['metrics'],
+        f'h{SELECTED_HORIZONS[-1]}_metrics': q_result['horizon_results'][-1]['metrics']
     }
 
 # Performance degradation summary
@@ -651,7 +658,7 @@ for model, label in zip(models, model_labels):
 print("\n" + "="*70)
 print("TRAINING AND EVALUATION COMPLETE")
 print("="*70)
-print(f"\nTrained {NUM_HORIZONS} horizons (15min to {NUM_HORIZONS*15}min ahead)")
+print(f"\nTrained {len(SELECTED_HORIZONS)} horizons: {SELECTED_HORIZONS} (15min to {max(SELECTED_HORIZONS)*15}min ahead)")
 print(f"Models trained on all {len(quarter_info)} quarters combined")
 print(f"Evaluated on {len(per_quarter_per_horizon_results)} individual quarterly test sets")
 print(f"Using {len(known_ahead_features)} time-based features + {len(forecast_features)} forecast features")
@@ -660,7 +667,9 @@ print(f"Metrics exported to: {metrics_file}")
 
 print("\nKey Findings:")
 for model, label in zip(models, model_labels):
-    rmse_h1 = horizon_results[0]['metrics'][model]['rmse']
-    rmse_h8 = horizon_results[-1]['metrics'][model]['rmse']
-    increase_pct = (rmse_h8 - rmse_h1) / rmse_h1 * 100
-    print(f"  {label}: RMSE increases {increase_pct:.1f}% from H1 to H8 (15min → 120min)")
+    rmse_first = horizon_results[0]['metrics'][model]['rmse']
+    rmse_last = horizon_results[-1]['metrics'][model]['rmse']
+    increase_pct = (rmse_last - rmse_first) / rmse_first * 100
+    h_first = horizon_results[0]['horizon']
+    h_last = horizon_results[-1]['horizon']
+    print(f"  {label}: RMSE increases {increase_pct:.1f}% from H{h_first} to H{h_last} ({h_first*15}min → {h_last*15}min)")
